@@ -1,32 +1,44 @@
 <!DOCTYPE html>
-<html lang="it" class="h-full">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Toy Elliptic Curve Cryptography Explorer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- MathJax for formulas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- MathJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .code-font { font-family: 'Fira Code', monospace; }
+        @keyframes flashHighlight {
+            0% { border-color: rgba(99, 102, 241, 1); background-color: rgba(99, 102, 241, 0.2); }
+            100% { border-color: rgba(51, 65, 85, 0.8); background-color: rgba(15, 23, 42, 0.8); }
+        }
+        .flash-update {
+            animation: flashHighlight 0.8s ease-out;
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 h-full flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
-    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+    <header class="bg-slate-800/85 backdrop-blur border-b border-slate-700 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 text-white font-bold text-lg">
                 <i class="fa-solid fa-cube"></i>
             </div>
             <div>
                 <h1 class="text-xl font-bold tracking-tight text-white">Toy ECC Explorer</h1>
-                <p class="text-xs text-slate-400">Ethereum Secp256k1 Educational Toy Model ($y^2 \equiv x^3 + 7 \pmod{17}$)</p>
+                <p class="text-xs text-slate-400">Customizable Elliptic Curve Model (\(y^2 \equiv x^3 + ax + b \pmod p\))</p>
             </div>
         </div>
         <div class="hidden sm:flex items-center space-x-2 text-xs bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-700 text-indigo-300">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>Active Curve: $F_{17}$ Field</span>
+            <span id="header-active-field">Active Field: \(\mathbb{F}_{17}\)</span>
         </div>
     </header>
 
@@ -35,132 +47,120 @@
         <!-- Left Panel: Controls & Visual Grid -->
         <section class="lg:col-span-7 flex flex-col space-y-6">
             
-            <!-- Curve Visualizer Card -->
+            <!-- Parameters Configuration Card -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700/80 p-5 shadow-xl space-y-4">
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center space-x-2">
+                    <i class="fa-solid fa-sliders text-indigo-400"></i>
+                    <span>Curve Parameters, Base Point & Max Steps</span>
+                </h2>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Param a</label>
+                        <input type="number" id="param-a" value="0" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm code-font text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Param b</label>
+                        <input type="number" id="param-b" value="7" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm code-font text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Modulus (p)</label>
+                        <input type="number" id="param-p" value="17" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm code-font text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Max Steps</label>
+                        <input type="number" id="param-maxsteps" value="30" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm code-font text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Base Gx</label>
+                        <input type="number" id="param-gx" value="1" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm code-font text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Base Gy</label>
+                        <input type="number" id="param-gy" value="5" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm code-font text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+                <button id="btn-apply-params" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-medium text-xs text-white transition shadow-lg shadow-indigo-600/30">
+                    Apply Parameters & Rebuild Grid
+                </button>
+            </div>
+
+            <!-- Canvas Visualizer Card -->
             <div class="bg-slate-800 rounded-2xl border border-slate-700/80 p-5 shadow-xl flex flex-col items-center">
                 <div class="w-full flex items-center justify-between mb-3">
                     <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center space-x-2">
                         <i class="fa-solid fa-chart-scatter text-indigo-400"></i>
-                        <span>Finite Field Grid ($\mathbb{F}_{17} \times \mathbb{F}_{17}$)</span>
+                        <span>Finite Field Grid</span>
                     </h2>
                     <span id="coord-status" class="text-xs text-slate-400 code-font">Hover over grid</span>
                 </div>
 
-                <!-- Canvas Wrapper -->
-                <div class="relative w-full aspect-square max-w-[450px] bg-slate-900 rounded-xl border border-slate-700 overflow-hidden flex items-center justify-center shadow-inner">
+                <div class="relative w-full aspect-square max-w-[400px] bg-slate-900 rounded-xl border border-slate-700 overflow-hidden flex items-center justify-center shadow-inner">
                     <canvas id="curveCanvas" class="w-full h-full cursor-pointer"></canvas>
-                </div>
-
-                <!-- Legend -->
-                <div class="flex flex-wrap items-center justify-center gap-4 mt-4 text-xs text-slate-300">
-                    <div class="flex items-center space-x-1.5">
-                        <span class="w-3 h-3 rounded-full bg-slate-700 border border-slate-500"></span>
-                        <span>Curve Points</span>
-                    </div>
-                    <div class="flex items-center space-x-1.5">
-                        <span class="w-3 h-3 rounded-full bg-indigo-500 shadow-md shadow-indigo-500/50"></span>
-                        <span>Current Point ($iG$)</span>
-                    </div>
-                    <div class="flex items-center space-x-1.5">
-                        <span class="w-3 h-3 rounded-full bg-emerald-500 shadow-md shadow-emerald-500/50"></span>
-                        <span>Base Point ($G$)</span>
-                    </div>
                 </div>
             </div>
 
-            <!-- Interactive Controls Card -->
+            <!-- Scalar Controls Card -->
             <div class="bg-slate-800 rounded-2xl border border-slate-700/80 p-5 shadow-xl space-y-4">
                 <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center space-x-2">
-                    <i class="fa-solid fa-sliders text-indigo-400"></i>
-                    <span>Scalar Multiplication Controls</span>
+                    <i class="fa-solid fa-bolt text-indigo-400"></i>
+                    <span>Scalar Multiplier (\(k\)) Controls</span>
                 </h2>
-
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
-                        <label for="privateKeyRange" class="text-sm text-slate-300 font-medium">Private Key ($k$):</label>
+                        <label for="privateKeyRange" class="text-sm text-slate-300 font-medium">Private Key / Scalar (\(k\)):</label>
                         <span id="k-value-display" class="code-font px-3 py-1 bg-indigo-950 text-indigo-300 rounded-lg text-sm font-bold border border-indigo-800">6</span>
                     </div>
                     <input type="range" id="privateKeyRange" min="1" max="30" value="6" 
                            class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
                 </div>
 
-                <!-- Player Toolbar -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
                     <button id="btn-first" class="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-xl font-medium text-xs transition flex items-center justify-center space-x-2 text-slate-200">
-                        <i class="fa-solid fa-backward-step"></i>
-                        <span>Reset (1G)</span>
+                        <i class="fa-solid fa-backward-step"></i><span>Reset (1G)</span>
                     </button>
                     <button id="btn-step" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-medium text-xs transition flex items-center justify-center space-x-2 text-white shadow-lg shadow-indigo-600/30">
-                        <i class="fa-solid fa-play"></i>
-                        <span>Step / Play</span>
+                        <i class="fa-solid fa-play"></i><span>Step / Play</span>
                     </button>
                     <button id="btn-pause" class="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-xl font-medium text-xs transition flex items-center justify-center space-x-2 text-slate-200" disabled>
-                        <i class="fa-solid fa-pause"></i>
-                        <span>Pause</span>
+                        <i class="fa-solid fa-pause"></i><span>Pause</span>
                     </button>
                     <button id="btn-auto" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-medium text-xs transition flex items-center justify-center space-x-2 text-white shadow-lg shadow-emerald-600/30">
-                        <i class="fa-solid fa-bolt"></i>
-                        <span>Auto Play</span>
+                        <i class="fa-solid fa-bolt"></i><span>Auto Play</span>
                     </button>
                 </div>
             </div>
 
         </section>
 
-        <!-- Right Panel: Results Log, Formulas & Public Key -->
+        <!-- Right Panel: Logs & Statistical Exploration -->
         <section class="lg:col-span-5 flex flex-col space-y-6">
             
             <!-- Public Key Output Box -->
             <div class="bg-gradient-to-br from-indigo-950 via-slate-800 to-slate-900 rounded-2xl border border-indigo-500/40 p-5 shadow-2xl relative overflow-hidden">
-                <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl"></div>
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center space-x-1.5">
-                        <i class="fa-solid fa-key"></i>
-                        <span>Toy Public Key Output ($Q = kG$)</span>
+                        <i class="fa-solid fa-key"></i><span>Public Key Output (\(Q = kG\))</span>
                     </span>
                     <span id="status-badge" class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold rounded-full border border-emerald-500/30">Valid Point</span>
                 </div>
                 <div class="mt-3 flex items-baseline justify-between bg-slate-900/80 rounded-xl p-4 border border-slate-700">
                     <div>
-                        <div class="text-xs text-slate-400 mb-1">Coordinates ($Q.x, Q.y$)</div>
+                        <div class="text-xs text-slate-400 mb-1">Coordinates (\(Q.x, Q.y\))</div>
                         <div id="public-key-output" class="code-font text-2xl font-bold text-white tracking-wide">(6, 3)</div>
                     </div>
-                    <button id="btn-copy" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs rounded-lg border border-slate-600 transition flex items-center space-x-1.5">
-                        <i class="fa-regular fa-copy"></i>
-                        <span>Copy</span>
-                    </button>
                 </div>
             </div>
 
-            <!-- Mathematical Formulas Explained -->
-            <div class="bg-slate-800 rounded-2xl border border-slate-700/80 p-5 shadow-xl space-y-3">
-                <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center space-x-2">
-                    <i class="fa-solid fa-book-open text-indigo-400"></i>
-                    <span>Math Engine ($\text{mod } 17$)</span>
-                </h2>
-                <div class="text-xs text-slate-300 space-y-2 bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/60 leading-relaxed">
-                    <p><strong class="text-indigo-300">Point Doubling ($P = Q$):</strong> 
-                       Slope $m = \frac{3x_1^2}{2y_1} \pmod{17}$
-                    </p>
-                    <p><strong class="text-indigo-300">Point Addition ($P \neq Q$):</strong> 
-                       Slope $m = \frac{y_2 - y_1}{x_2 - x_1} \pmod{17}$
-                    </p>
-                    <p class="text-slate-400 pt-1 border-t border-slate-800">
-                        Coordinates: $x_3 = m^2 - x_1 - x_2 \pmod{17}$, $y_3 = m(x_1 - x_3) - y_1 \pmod{17}$
-                    </p>
-                </div>
-            </div>
-
-            <!-- Step-by-Step Log Table -->
-            <div class="bg-slate-800 rounded-2xl border border-slate-700/80 p-5 shadow-xl flex flex-col flex-1 min-h-[300px]">
+            <!-- Execution Trace Log Table -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700/80 p-5 shadow-xl flex flex-col">
                 <div class="flex items-center justify-between mb-3">
                     <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center space-x-2">
-                        <i class="fa-solid fa-list-ol text-indigo-400"></i>
-                        <span>Execution Trace ($1G \dots kG$)</span>
+                        <i class="fa-solid fa-list-ol text-indigo-400"></i><span>Execution Trace</span>
                     </h2>
-                    <span id="trace-counter" class="text-xs text-slate-400 code-font">Step 6 of 6</span>
+                    <span id="trace-counter" class="text-xs text-slate-400 code-font">Step 6 of 30</span>
                 </div>
                 
-                <div class="flex-1 overflow-y-auto max-h-[320px] rounded-xl border border-slate-700 bg-slate-900/50">
+                <div class="flex-1 overflow-y-auto max-h-[180px] rounded-xl border border-slate-700 bg-slate-900/50">
                     <table class="w-full text-left border-collapse">
                         <thead class="bg-slate-800 text-slate-300 text-[11px] uppercase tracking-wider sticky top-0 border-b border-slate-700">
                             <tr>
@@ -169,10 +169,18 @@
                                 <th class="p-3 font-semibold">Result Point</th>
                             </tr>
                         </thead>
-                        <tbody id="log-table-body" class="divide-y divide-slate-800 text-xs code-font">
-                            <!-- Injected by JS -->
-                        </tbody>
+                        <tbody id="log-table-body" class="divide-y divide-slate-800 text-xs code-font"></tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- Statistical Exploration Box (Original Layout with Change Detection & Flash) -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700/80 p-5 shadow-xl space-y-3">
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center space-x-2">
+                    <i class="fa-solid fa-chart-pie text-indigo-400"></i><span>Statistical Exploration</span>
+                </h2>
+                <div id="stats-exploration-box" class="bg-slate-900/80 p-4 rounded-xl border border-slate-700 code-font text-xs text-slate-300 whitespace-pre-wrap leading-relaxed max-h-[300px] overflow-y-auto transition-all duration-300">
+                    <!-- Dynamic stats -->
                 </div>
             </div>
 
@@ -181,24 +189,22 @@
     </main>
 
     <script>
-        const P_MOD = 17;
-        const A_COEFF = 0;
-        const B_COEFF = 7;
-        const G_POINT = [1, 5];
+        let P_MOD = 17;
+        let A_COEFF = 0;
+        let B_COEFF = 7;
+        let G_POINT = [1, 5];
+        let maxSteps = 30;
 
         let currentStep = 6;
-        let maxSteps = 30;
-        let isPlaying = false;
-        let playInterval = null;
         let hoveredCell = null;
-
-        // Valid points cache on y^2 = x^3 + 7 mod 17
         let curvePoints = [];
+        let autoPlayInterval = null;
+        let lastStatsText = ""; // Variabile per tracciare le modifiche del testo
 
         function computeCurvePoints() {
             curvePoints = [];
             for (let x = 0; x < P_MOD; x++) {
-                let rhs = (x * x * x + B_COEFF) % P_MOD;
+                let rhs = (x * x * x + A_COEFF * x + B_COEFF) % P_MOD;
                 if (rhs < 0) rhs += P_MOD;
                 for (let y = 0; y < P_MOD; y++) {
                     if ((y * y) % P_MOD === rhs) {
@@ -247,9 +253,8 @@
         }
 
         function scalarMultiply(k) {
-            let current = null;
-            let stepsHistory = [];
             let currentP = null;
+            let stepsHistory = [];
 
             for (let i = 1; i <= k; i++) {
                 currentP = pointAdd(currentP, G_POINT);
@@ -278,63 +283,47 @@
             const height = canvas.parentElement.clientHeight;
             ctx.clearRect(0, 0, width, height);
 
-            const padding = 35;
+            const padding = 25;
             const size = Math.min(width, height) - padding * 2;
             const stepSize = size / P_MOD;
 
-            // Draw Background Grid
             ctx.strokeStyle = '#334155';
             ctx.lineWidth = 0.5;
 
             for (let i = 0; i <= P_MOD; i++) {
                 let pos = padding + i * stepSize;
-                // Vertical lines
                 ctx.beginPath();
                 ctx.moveTo(pos, padding);
                 ctx.lineTo(pos, padding + size);
                 ctx.stroke();
 
-                // Horizontal lines
                 ctx.beginPath();
                 ctx.moveTo(padding, pos);
                 ctx.lineTo(padding + size, pos);
                 ctx.stroke();
-
-                if (i < P_MOD && i % 4 === 0) {
-                    ctx.fillStyle = '#64748b';
-                    ctx.font = '10px Fira Code, monospace';
-                    ctx.fillText(i, pos + stepSize / 3, padding - 10);
-                    ctx.fillText(i, padding - 22, pos + stepSize / 1.5);
-                }
             }
 
-            // Draw all valid curve points
             curvePoints.forEach(([cx, cy]) => {
                 let px = padding + cx * stepSize + stepSize / 2;
-                // Invert Y coordinate for standard Cartesian display (0 at bottom)
                 let py = padding + (P_MOD - 1 - cy) * stepSize + stepSize / 2;
-
                 ctx.beginPath();
-                ctx.arc(px, py, 5, 0, Math.PI * 2);
+                ctx.arc(px, py, Math.max(2, stepSize / 5), 0, Math.PI * 2);
                 ctx.fillStyle = '#475569';
                 ctx.fill();
             });
 
-            // Highlight hovered cell if any
             if (hoveredCell) {
                 let hx = padding + hoveredCell.x * stepSize + stepSize / 2;
                 let hy = padding + (P_MOD - 1 - hoveredCell.y) * stepSize + stepSize / 2;
                 ctx.beginPath();
-                ctx.arc(hx, hy, 7, 0, Math.PI * 2);
+                ctx.arc(hx, hy, Math.max(4, stepSize / 3), 0, Math.PI * 2);
                 ctx.strokeStyle = '#38bdf8';
                 ctx.lineWidth = 2;
                 ctx.stroke();
             }
 
-            // Get current scalar multiplication path up to currentStep
             let res = scalarMultiply(currentStep);
             
-            // Draw path lines between consecutive points
             if (res.history.length > 1) {
                 ctx.beginPath();
                 ctx.strokeStyle = 'rgba(99, 102, 241, 0.35)';
@@ -350,7 +339,6 @@
                 ctx.stroke();
             }
 
-            // Draw points in history
             res.history.forEach((h, idx) => {
                 let pt = h.point;
                 if (!pt) return;
@@ -358,24 +346,20 @@
                 let py = padding + (P_MOD - 1 - pt[1]) * stepSize + stepSize / 2;
 
                 ctx.beginPath();
-                ctx.arc(px, py, 7, 0, Math.PI * 2);
-                if (idx === 0) {
-                    ctx.fillStyle = '#10b981'; // G point
-                } else if (idx === res.history.length - 1) {
-                    ctx.fillStyle = '#6366f1'; // Current Q point
-                } else {
-                    ctx.fillStyle = '#818cf8';
-                }
+                ctx.arc(px, py, Math.max(3, stepSize / 3.5), 0, Math.PI * 2);
+                if (idx === 0) ctx.fillStyle = '#10b981';
+                else if (idx === res.history.length - 1) ctx.fillStyle = '#6366f1';
+                else ctx.fillStyle = '#818cf8';
                 ctx.fill();
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = '#ffffff';
-                ctx.stroke();
             });
         }
 
         function updateUI() {
             const range = document.getElementById("privateKeyRange");
+            range.max = maxSteps;
+            if (currentStep > maxSteps) currentStep = maxSteps;
             range.value = currentStep;
+
             document.getElementById("k-value-display").innerText = currentStep;
             document.getElementById("trace-counter").innerText = `Step ${currentStep} of ${maxSteps}`;
 
@@ -385,7 +369,7 @@
 
             if (res.finalPoint) {
                 pubKeyEl.innerText = `(${res.finalPoint[0]}, ${res.finalPoint[1]})`;
-                badgeEl.innerText = "Valid Point on Curve";
+                badgeEl.innerText = "Valid Point";
                 badgeEl.className = "px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold rounded-full border border-emerald-500/30";
             } else {
                 pubKeyEl.innerText = "Infinity (O)";
@@ -393,7 +377,6 @@
                 badgeEl.className = "px-2 py-0.5 bg-amber-500/20 text-amber-300 text-[10px] font-semibold rounded-full border border-amber-500/30";
             }
 
-            // Populate Table Log
             const tbody = document.getElementById("log-table-body");
             tbody.innerHTML = "";
             res.history.forEach((h) => {
@@ -402,18 +385,94 @@
                     tr.className = "bg-indigo-950/60 font-semibold text-indigo-200 border-l-4 border-indigo-500";
                 }
                 let ptStr = h.point ? `(${h.point[0]}, ${h.point[1]})` : "Infinity (O)";
-                tr.innerHTML = `
-                    <td class="p-3">${h.step}G</td>
-                    <td class="p-3 text-slate-400">${h.op}</td>
-                    <td class="p-3 text-indigo-300">${ptStr}</td>
-                `;
+                tr.innerHTML = `<td class="p-3">${h.step}G</td><td class="p-3 text-slate-400">${h.op}</td><td class="p-3 text-indigo-300">${ptStr}</td>`;
                 tbody.appendChild(tr);
             });
 
+            generateStatisticalExploration(res.history);
             drawGrid();
         }
 
+        function generateStatisticalExploration(history) {
+            let validPoints = history.filter(h => h.point !== null);
+            let xVals = validPoints.map(h => h.point[0]);
+            let yVals = validPoints.map(h => h.point[1]);
+            let freq = {};
+            history.forEach(h => {
+                let kStr = h.point ? `${h.point[0]},${h.point[1]}` : "Infinity";
+                freq[kStr] = (freq[kStr] || 0) + 1;
+            });
+
+            let bitLengths = xVals.map(x => x.toString(2).length);
+            let avgBits = bitLengths.length ? (bitLengths.reduce((a, b) => a + b, 0) / bitLengths.length).toFixed(2) : 0;
+            let currentK = history.length;
+
+            let statsText = `== STATISTICAL EXPLORATION (k = ${currentK}) ==
+
+1. Distribution of x and y coordinates:
+   - X coordinate span across ${currentK} steps: [${xVals.length ? Math.min(...xVals) : 0} ... ${xVals.length ? Math.max(...xVals) : 0}]
+   - Y coordinate span across ${currentK} steps: [${yVals.length ? Math.min(...yVals) : 0} ... ${yVals.length ? Math.max(...yVals) : 0}]
+
+2. Frequency of individual values:
+   - Unique points visited: ${Object.keys(freq).length} / ${currentK} steps.
+   - Frequency count per coordinate: ${JSON.stringify(freq)}
+
+3. Distribution of bits:
+   - Modulus prime p = ${P_MOD} bounds coordinate values. Average coordinate bit length: ~${avgBits} bits.
+
+4. Apparent uniformity:
+   - Group operations generate algebraic subgroup orbits instead of uniform pseudo-random distributions, creating cyclic periodicity.
+
+5. Correlations between input and output:
+   - Non-linear relation between scalar multiplier k and coordinates (basis for ECDLP hardness).
+
+6. Possible avalanche-like behaviour:
+   - Minor modifications in parameters or base point completely scramble output trajectory paths.
+
+7. Discussion (One-Way Functions vs Hash Functions):
+   - One-Way Functions (ECC): ECDLP ensures computing Q = kG is easy, but finding k from Q is intractable. Avalanche and non-linear properties prevent structural shortcuts.
+   - Cryptographic Hash Functions: Require fixed-length output digests, preimage resistance, and strict avalanche criteria for arbitrary byte streams, whereas ECC executes structured algebraic group operations.`;
+
+            const statsBox = document.getElementById("stats-exploration-box");
+            statsBox.innerText = statsText;
+
+            // Evidenzia con animazione flash SOLO se il testo è effettivamente cambiato rispetto all'ultimo aggiornamento
+            if (lastStatsText !== statsText) {
+                lastStatsText = statsText;
+                statsBox.classList.remove("flash-update");
+                void statsBox.offsetWidth; // Trigger reflow
+                statsBox.classList.add("flash-update");
+            }
+        }
+
+        function stopAutoPlay() {
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+            }
+            document.getElementById("btn-pause").disabled = true;
+            document.getElementById("btn-auto").disabled = false;
+        }
+
+        document.getElementById("btn-apply-params").addEventListener("click", () => {
+            stopAutoPlay();
+            A_COEFF = parseInt(document.getElementById("param-a").value);
+            B_COEFF = parseInt(document.getElementById("param-b").value);
+            P_MOD = parseInt(document.getElementById("param-p").value);
+            maxSteps = parseInt(document.getElementById("param-maxsteps").value);
+            let gx = parseInt(document.getElementById("param-gx").value);
+            let gy = parseInt(document.getElementById("param-gy").value);
+            G_POINT = [gx, gy];
+
+            document.getElementById("header-active-field").innerHTML = `Active Field: \\(\\mathbb{F}_{${P_MOD}}\\\)`;
+            computeCurvePoints();
+            currentStep = Math.min(currentStep, maxSteps);
+            updateUI();
+            if (window.MathJax) MathJax.typeset();
+        });
+
         document.getElementById("privateKeyRange").addEventListener("input", (e) => {
+            stopAutoPlay();
             currentStep = parseInt(e.target.value);
             updateUI();
         });
@@ -435,71 +494,25 @@
         });
 
         document.getElementById("btn-auto").addEventListener("click", () => {
-            if (isPlaying) return;
-            isPlaying = true;
-            document.getElementById("btn-pause").removeAttribute("disabled");
-            document.getElementById("btn-auto").classList.add("opacity-50");
-            playInterval = setInterval(() => {
-                currentStep = currentStep >= maxSteps ? 1 : currentStep + 1;
-                updateUI();
-            }, 600);
-        });
-
-        function stopAutoPlay() {
-            isPlaying = false;
-            clearInterval(playInterval);
-            document.getElementById("btn-pause").setAttribute("disabled", "true");
-            document.getElementById("btn-auto").classList.remove("opacity-50");
-        }
-
-        document.getElementById("btn-copy").addEventListener("click", () => {
-            const text = document.getElementById("public-key-output").innerText;
-            const dummy = document.createElement("textarea");
-            document.body.appendChild(dummy);
-            dummy.value = text;
-            dummy.select();
-            document.execCommand("copy");
-            document.body.removeChild(dummy);
+            if (autoPlayInterval) return;
             
-            const btn = document.getElementById("btn-copy");
-            btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i><span>Copied!</span>`;
-            setTimeout(() => {
-                btn.innerHTML = `<i class="fa-regular fa-copy"></i><span>Copy</span>`;
-            }, 2000);
-        });
+            document.getElementById("btn-pause").disabled = false;
+            document.getElementById("btn-auto").disabled = true;
 
-        canvas.addEventListener("mousemove", (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const xCoord = e.clientX - rect.left;
-            const yCoord = e.clientY - rect.top;
-            
-            const padding = 35;
-            const size = Math.min(rect.width, rect.height) - padding * 2;
-            const stepSize = size / P_MOD;
-
-            let gridX = Math.floor((xCoord - padding) / stepSize);
-            let gridY = P_MOD - 1 - Math.floor((yCoord - padding) / stepSize);
-
-            if (gridX >= 0 && gridX < P_MOD && gridY >= 0 && gridY < P_MOD) {
-                hoveredCell = { x: gridX, y: gridY };
-                let isCurve = curvePoints.some(([cx, cy]) => cx === gridX && cy === gridY);
-                document.getElementById("coord-status").innerText = `(${gridX}, ${gridY}) ${isCurve ? '✨ Curve Point' : ''}`;
-            } else {
-                hoveredCell = null;
-                document.getElementById("coord-status").innerText = "Hover over grid";
+            if (currentStep >= maxSteps) {
+                currentStep = 1;
             }
-            drawGrid();
+
+            autoPlayInterval = setInterval(() => {
+                if (currentStep < maxSteps) {
+                    currentStep++;
+                    updateUI();
+                } else {
+                    stopAutoPlay();
+                }
+            }, 500);
         });
 
-        canvas.addEventListener("mouseleave", () => {
-            hoveredCell = null;
-            document.getElementById("coord-status").innerText = "Hover over grid";
-            drawGrid();
-        });
-
-        window.addEventListener("resize", resizeCanvas);
-
-        // Initial setup
         window.onload = () => {
             computeCurvePoints();
             resizeCanvas();
