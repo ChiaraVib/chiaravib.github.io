@@ -283,11 +283,11 @@
         <!-- 4. Statistical properties -->
         <section id="statistics">
             <h2>Statistical Properties</h2>
-            <p><strong>Observable Experiment:</strong> Analyzing bit distributions and avalanche effects across hash functions (Keccak-256) and elliptic curve operations reveals key statistical properties:</p>
+            <p><strong>Observable Experiment & Analysis:</strong> To evaluate the behavior of the primitives used in the wallet pipeline, we can analyze observable statistical properties across hashing and key derivation stages:</p>
             <ul>
-                <li><strong>Avalanche Effect:</strong> Modifying even a single bit in the private key or seed alters approximately 50% of the bits in the resulting Keccak-256 hash, demonstrating ideal pseudorandom behavior.</li>
-                <li><strong>Bit Uniformity:</strong> Frequency tests on Keccak-256 output bits confirm an apparent uniform distribution (roughly 50% zeros and 50% ones), essential for preventing structured pattern attacks.</li>
-                <li><strong>EIP-55 Distribution:</strong> Checksummed strings encode hash fragments into upper and lowercase patterns, distributing visual entropy and ensuring error detection rates exceeding 99.9%.</li>
+                <li><strong>Avalanche Effect:</strong> Testing Keccak-256 with slightly modified inputs (e.g., flipping a single bit in a private key or seed) demonstrates that approximately 50% of the output bits change. This high diffusion guarantees that input patterns cannot be correlated with output hashes.</li>
+                <li><strong>Bit Uniformity and Randomness:</strong> Statistical frequency tests performed on large sets of Keccak-256 digests confirm an empirical bit balance (roughly 50% zeros and 50% ones). This uniform distribution prevents structural biases or predictable collisions.</li>
+                <li><strong>EIP-55 Visual Entropy and Checksum:</strong> By incorporating hash-derived casing rules into the 40-character hexadecimal address, EIP-55 distributes mixed-case characters uniformly across the string. This not only provides a built-in checksum capable of detecting over 99.9% of typing errors but also increases the visual entropy of the representation.</li>
             </ul>
         </section>
 
