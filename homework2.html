@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>From Wallet Seed to Ethereum Address</title>
     <style>
         :root {
-            --primary-color: #627eea;
-            --secondary-color: #3b499df5;
+            --primary-color: #5b21b6;
+            --secondary-color: #6d28d9;
+            --accent-color: #8b5cf6;
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --text-color: #1e293b;
             --border-color: #e2e8f0;
-            --code-bg: #f1f5f9;
+            --code-bg: #f3e8ff;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -33,7 +34,7 @@
             font-size: 2.5rem;
         }
         header p {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             opacity: 0.9;
             max-width: 800px;
             margin: 0 auto;
@@ -45,19 +46,20 @@
         }
         section {
             background: var(--card-bg);
-            border-radius: 12px;
+            border-radius: 8px;
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border-top: 4px solid var(--accent-color);
         }
         h2 {
-            color: var(--secondary-color);
+            color: var(--primary-color);
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 0.5rem;
             margin-top: 0;
         }
         h3 {
-            color: #1e293b;
+            color: var(--secondary-color);
             margin-top: 1.5rem;
         }
         .pipeline-flow {
@@ -70,13 +72,11 @@
             background: var(--code-bg);
             border-left: 4px solid var(--primary-color);
             padding: 1rem 1.25rem;
-            border-radius: 0 8px 8px 0;
-            cursor: pointer;
+            border-radius: 0 6px 6px 0;
             transition: all 0.2s ease;
         }
         .pipeline-step:hover {
-            transform: translateX(4px);
-            background: #e2e8f0;
+            background: #ede9fe;
         }
         .pipeline-step h4 {
             margin: 0 0 0.5rem 0;
@@ -92,7 +92,7 @@
         }
         .step-details div span {
             font-weight: bold;
-            color: #475569;
+            color: #581c87;
         }
         table {
             width: 100%;
@@ -106,6 +106,7 @@
         }
         th {
             background-color: var(--code-bg);
+            color: var(--primary-color);
         }
         .timeline {
             position: relative;
@@ -133,7 +134,7 @@
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: var(--primary-color);
+            background: var(--accent-color);
             border: 2px solid white;
         }
         .timeline-date {
@@ -147,6 +148,7 @@
             border-radius: 4px;
             font-family: monospace;
             font-size: 0.9em;
+            color: #6b21a8;
         }
         footer {
             text-align: center;
@@ -160,119 +162,119 @@
 
     <header>
         <h1>From Wallet Seed to Ethereum Address</h1>
-        <p>Analisi approfondita della pipeline crittografica dei wallet Ethereum, dai concetti di base alle proprietà statistiche e storiche.</p>
+        <p>A comprehensive analysis of the cryptographic pipeline in Ethereum wallets, detailing standards, primitives, statistical properties, and historical evolution.</p>
     </header>
 
     <main>
-        <!-- 1. Titolo e obiettivo -->
+        <!-- 1. Introduction & Objective (Compact text structure) -->
         <section id="objective">
-            <h2>1. Titolo e obiettivo</h2>
-            <p><strong>Obiettivo:</strong> Esaminare ed esplorare l'intera pipeline crittografica pratica utilizzata nei wallet Ethereum per generare un indirizzo a partire da una frase mnemonica iniziale.</p>
-            <p><strong>Pipeline analizzata:</strong> Il percorso trasforma una sequenza casuale di parole in un indirizzo crittograficamente sicuro attraverso standard di derivazione gerarchica, curve ellittiche, funzioni di hash e codifiche con checksum.</p>
-            <p><strong>Proprietà statistiche:</strong> Vengono esaminate le caratteristiche di uniformità, imprevedibilità, diffusione (effetto valanga) e distribuzione dei bit/caratteri per comprendere il comportamento dei diversi moduli crittografici impiegati.</p>
+            <h2>From Wallet Seed to Ethereum Address</h2>
+            <p>This document examines the practical cryptographic pipeline implemented in Ethereum wallets to securely transform a human-readable mnemonic phrase into a valid Ethereum address. The analysis covers hierarchical deterministic key derivation, elliptic-curve public-key cryptography, cryptographic hashing functions, and mixed-case checksum encoding. Furthermore, it explores the underlying statistical properties, historical context, and the rationale behind combining multiple distinct cryptographic techniques.</p>
         </section>
 
         <!-- 2. Wallet pipeline -->
         <section id="pipeline">
-            <h2>2. Wallet pipeline</h2>
-            <p>La sequenza logica dei passaggi che compongono la generazione e derivazione di un indirizzo Ethereum:</p>
-            <div style="font-family: monospace; background: var(--code-bg); padding: 1rem; border-radius: 6px; text-align: center; margin-bottom: 1.5rem; font-size: 0.9rem; overflow-x: auto;">
+            <h2>Wallet Pipeline</h2>
+            <p>The logical sequence of steps involved in generating and deriving an Ethereum address:</p>
+            <div style="font-family: monospace; background: var(--code-bg); padding: 1rem; border-radius: 6px; text-align: center; margin-bottom: 1.5rem; font-size: 0.85rem; overflow-x: auto;">
                 Mnemonic &rarr; BIP-39 &rarr; Seed &rarr; BIP-32/BIP-44 &rarr; Private Key &rarr; secp256k1 &rarr; Public Key &rarr; Keccak-256 &rarr; Address &rarr; EIP-55 &rarr; Checksummed Address
             </div>
 
             <div class="pipeline-flow">
                 <div class="pipeline-step">
                     <h4>1. Mnemonic &rarr; BIP-39 &rarr; Seed</h4>
-                    <p>Conversione di una frase mnemonica leggibile dall'uomo in un seme binario deterministico a 512 bit.</p>
+                    <p>Converts a human-readable mnemonic sentence into a deterministic binary seed.</p>
                     <div class="step-details">
-                        <div><span>Input:</span> 12/24 parole + Optional passphrase</div>
-                        <div><span>Operazione:</span> PBKDF2-HMAC-SHA512 (2048 iterazioni)</div>
+                        <div><span>Input:</span> 12/24 words + Optional passphrase</div>
+                        <div><span>Operation:</span> PBKDF2-HMAC-SHA512 (2048 iterations)</div>
                         <div><span>Output:</span> 512-bit Seed</div>
-                        <div><span>Scopo:</span> Rendere il backup umano portabile e sicuro.</div>
+                        <div><span>Purpose:</span> Human-readable backup and deterministic seed derivation.</div>
                     </div>
                 </div>
 
                 <div class="pipeline-step">
                     <h4>2. Seed &rarr; BIP-32 / BIP-44 &rarr; Private Key</h4>
-                    <p>Derivazione gerarchica deterministica (HD) per generare un intero albero di chiavi da un unico seme madre.</p>
+                    <p>Hierarchical Deterministic (HD) derivation allowing an entire tree of keys from a single master seed.
+                        BIP-32 defines how master and child keys are derived from a seed using hierarchical deterministic derivation.
+                        BIP-44 specifies a standardized path structure to organize accounts and addresses.</p>
                     <div class="step-details">
-                        <div><span>Input:</span> 512-bit Seed / Albero di derivazione</div>
-                        <div><span>Operazione:</span> HMAC-SHA512 (Extended Key Derivation)</div>
+                        <div><span>Input:</span> 512-bit Seed / Derivation Path</div>
+                        <div><span>Operation:</span> HMAC-SHA512 (Extended Key Derivation)</div>
                         <div><span>Output:</span> Master Private Key / Child Private Keys</div>
-                        <div><span>Scopo:</span> Gestire account multipli con un unico backup (Path standard: <code>m/44'/60'/0'/0/0</code>).</div>
+                        <div><span>Purpose:</span> Managing multiple accounts from one backup (Path: <code>m/44'/60'/0'/0/0</code>).</div>
                     </div>
                 </div>
 
                 <div class="pipeline-step">
                     <h4>3. Private Key &rarr; secp256k1 &rarr; Public Key</h4>
-                    <p>Derivazione della chiave pubblica a partire dalla chiave privata sfruttando la crittografia a curve ellittiche.</p>
+                    <p>Deriving the public key from the private key using elliptic-curve cryptography.</p>
                     <div class="step-details">
                         <div><span>Input:</span> 256-bit Private Key (k)</div>
-                        <div><span>Operazione:</span> Moltiplicazione scalare su curva ellittica ($Q = k \cdot G$)</div>
-                        <div><span>Output:</span> 512-bit Public Key (o compressa a 256-bit)</div>
-                        <div><span>Scopo:</span> Consentire la verifica delle firme digitali senza rivelare la chiave privata.</div>
+                        <div><span>Operation:</span> Elliptic curve scalar multiplication ($Q = k \cdot G$)</div>
+                        <div><span>Output:</span> 512-bit Public Key</div>
+                        <div><span>Purpose:</span> Enabling digital signature verification without revealing the private key.</div>
                     </div>
                 </div>
 
                 <div class="pipeline-step">
                     <h4>4. Public Key &rarr; Keccak-256 &rarr; Address</h4>
-                    <p>Compattazione e trasformazione crittografica della chiave pubblica in un identificativo di lunghezza ridotta.</p>
+                    <p>Cryptographic hashing and reduction of the public key to a compact identifier.</p>
                     <div class="step-details">
-                        <div><span>Input:</span> Chiave pubblica non compressa (senza prefisso 0x04)</div>
-                        <div><span>Operazione:</span> Funzione di hash crittografico Keccak-256</div>
-                        <div><span>Output:</span> Hash a 256 bit (vengono presi gli ultimi 20 byte / 40 caratteri hex)</div>
-                        <div><span>Scopo:</span> Ottenere un indirizzo di dimensioni fisse e contenute.</div>
+                        <div><span>Input:</span> Uncompressed Public Key (excluding 0x04 prefix)</div>
+                        <div><span>Operation:</span> Keccak-256 cryptographic hash function</div>
+                        <div><span>Output:</span> 256-bit hash (taking the last 20 bytes / 40 hex characters)</div>
+                        <div><span>Purpose:</span> Deriving a fixed-size, concise account identifier.</div>
                     </div>
                 </div>
 
                 <div class="pipeline-step">
                     <h4>5. Address &rarr; EIP-55 &rarr; Checksummed Address</h4>
-                    <p>Applicazione di un checksum basato sul maiuscolo/minuscolo per prevenire errori di digitazione.</p>
+                    <p>Applying a mixed-case checksum encoding to prevent typographical errors.</p>
                     <div class="step-details">
-                        <div><span>Input:</span> Indirizzo esadecimale grezzo a 40 caratteri</div>
-                        <div><span>Operazione:</span> Keccak-256 dell'indirizzo in lowercase; i bit dell'hash determinano il case delle lettere</div>
-                        <div><span>Output:</span> Indirizzo misto (es. <code>0x5290...</code>)</div>
-                        <div><span>Scopo:</span> Proteggere l'utente dall'invio di fondi verso indirizzi errati a causa di errori di battitura.</div>
+                        <div><span>Input:</span> Raw 40-character hexadecimal address</div>
+                        <div><span>Operation:</span> Keccak-256 of lowercase address; hash bits determine letter casing</div>
+                        <div><span>Output:</span> Mixed-case address (e.g., <code>0x5290...</code>)</div>
+                        <div><span>Purpose:</span> Protecting users from sending funds to incorrect addresses due to typos.</div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 3. Concetti crittografici -->
+        <!-- 3. Cryptographic concepts -->
         <section id="concepts">
-            <h2>3. Concetti crittografici</h2>
-            <p>Per comprendere appieno la pipeline, è fondamentale distinguere chiaramente le diverse primitive e tecniche utilizzate:</p>
+            <h2>Cryptographic Concepts</h2>
+            <p>A clear distinction among the various primitives and techniques utilized throughout the pipeline:</p>
             <table>
                 <thead>
                     <tr>
-                        <th>Concetto</th>
-                        <th>Definizione e Ruolo nella Pipeline</th>
+                        <th>Concept</th>
+                        <th>Definition and Role in the Pipeline</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><strong>Key Generation</strong></td>
-                        <td>Processo di creazione di un segreto casuale iniziale (chiave privata o seed) da una sorgente di entropia sicura.</td>
+                        <td>The process of creating an initial random secret (private key or seed) from a secure entropy source.</td>
                     </tr>
                     <tr>
                         <td><strong>Key Derivation</strong></td>
-                        <td>Processo deterministico per calcolare chiavi figlie o derivate a partire da una chiave o seme master (es. BIP-32/44).</td>
+                        <td>A deterministic process to compute child keys from a master key or seed (e.g., BIP-32/44).</td>
                     </tr>
                     <tr>
                         <td><strong>Public-Key Cryptography</strong></td>
-                        <td>Sistema basato su coppie di chiavi (privata e pubblica) legate da funzioni matematiche asimmetriche unidirezionali (es. curva secp256k1).</td>
+                        <td>Asymmetric systems relying on key pairs (private/public) linked by one-way mathematical functions (e.g., secp256k1).</td>
                     </tr>
                     <tr>
                         <td><strong>Hashing</strong></td>
-                        <td>Funzione matematica unidirezionale che mappa dati di lunghezza arbitraria in una stringa di bit a dimensione fissa (es. Keccak-256).</td>
+                        <td>One-way mathematical functions mapping arbitrary-length data to a fixed-size bit string (e.g., Keccak-256).</td>
                     </tr>
                     <tr>
                         <td><strong>Checksum</strong></td>
-                        <td>Meccanismo di controllo degli errori (es. EIP-55) integrato nella rappresentazione testuale dei dati per validare l'integrità.</td>
+                        <td>Error-detection mechanisms (e.g., EIP-55) integrated into text representations to validate data integrity.</td>
                     </tr>
                     <tr>
                         <td><strong>Encoding</strong></td>
-                        <td>Conversione dei dati binari in un formato testuale leggibile o standardizzato (es. Hexadecimal / Base58 / Bech32).</td>
+                        <td>Converting binary data into a readable or standardized textual format (e.g., Hexadecimal / Base58).</td>
                     </tr>
                 </tbody>
             </table>
@@ -280,79 +282,79 @@
 
         <!-- 4. Statistical properties -->
         <section id="statistics">
-            <h2>4. Statistical properties</h2>
-            <p><strong>Esperimento osservabile:</strong> Analizzando la distribuzione dei bit o l'effetto valanga nelle funzioni di hash (Keccak-256) e nella derivazione a curva ellittica (secp256k1), emergono proprietà statistiche chiave:</p>
+            <h2>Statistical Properties</h2>
+            <p><strong>Observable Experiment:</strong> Analyzing bit distributions and avalanche effects across hash functions (Keccak-256) and elliptic curve operations reveals key statistical properties:</p>
             <ul>
-                <li><strong>Effetto valanga (Avalanche Effect):</strong> Modificando anche un solo bit nella chiave privata o nel seed, l'hash risultante (Keccak-256) cambia in media circa il 50% dei suoi bit, mostrando un comportamento pseudocasuale ideale.</li>
-                <li><strong>Distribuzione dei bit negli hash:</strong> I test di frequenza sui bit di output di Keccak-256 confermano un'apparente uniformità (distribuzione approssimativamente 50% zeri e 50% uni), essenziale per prevenire attacchi basati su pattern strutturati.</li>
-                <li><strong>Distribuzione EIP-55:</strong> Nelle stringhe con checksum EIP-55, la combinazione di lettere maiuscole e minuscole codifica implicitamente frammenti dell'hash, distribuendo l'entropia visiva e garantendo una probabilità di rilevamento degli errori di battitura superiore al 99.9%.</li>
+                <li><strong>Avalanche Effect:</strong> Modifying even a single bit in the private key or seed alters approximately 50% of the bits in the resulting Keccak-256 hash, demonstrating ideal pseudorandom behavior.</li>
+                <li><strong>Bit Uniformity:</strong> Frequency tests on Keccak-256 output bits confirm an apparent uniform distribution (roughly 50% zeros and 50% ones), essential for preventing structured pattern attacks.</li>
+                <li><strong>EIP-55 Distribution:</strong> Checksummed strings encode hash fragments into upper and lowercase patterns, distributing visual entropy and ensuring error detection rates exceeding 99.9%.</li>
             </ul>
         </section>
 
         <!-- 5. Historical context -->
         <section id="history">
-            <h2>5. Historical context</h2>
-            <p>La linea temporale che ha portato all'evoluzione delle tecnologie impestate nei moderni wallet:</p>
+            <h2>Historical Context</h2>
+            <p>The chronological timeline tracing the evolution of technologies integrated into modern wallets:</p>
             <div class="timeline">
                 <div class="timeline-item">
                     <span class="timeline-date">1977</span>
                     <h4>RSA (Public-Key Cryptography)</h4>
-                    <p>Introduzione del primo pratico sistema di crittografia asimmetrica a chiave pubblica.</p>
+                    <p>Introduction of the first practical asymmetric public-key encryption system.</p>
                 </div>
                 <div class="timeline-item">
                     <span class="timeline-date">2001</span>
                     <h4>SHA-2 / SHA-512</h4>
-                    <p>Standardizzazione della famiglia di funzioni crittografiche sicure da parte del NIST.</p>
+                    <p>Standardization of secure cryptographic hash function families by NIST.</p>
                 </div>
                 <div class="timeline-item">
                     <span class="timeline-date">2012</span>
                     <h4>BIP-32 (Hierarchical Deterministic Wallets)</h4>
-                    <p>Introduzione dei wallet gerarchici deterministici per derivare chiavi multiple da un unico seme.</p>
+                    <p>Introduction of deterministic hierarchical wallets for deriving multiple keys from a single seed.</p>
                 </div>
                 <div class="timeline-item">
                     <span class="timeline-date">2013</span>
                     <h4>BIP-39 (Mnemonic Code)</h4>
-                    <p>Standard per la rappresentazione dei seed tramite sequenze di parole leggibili dall'uomo.</p>
+                    <p>Standard for representing binary seeds via human-readable word sequences.</p>
                 </div>
                 <div class="timeline-item">
                     <span class="timeline-date">2014</span>
                     <h4>BIP-44 (Multi-Account HD Wallets)</h4>
-                    <p>Definizione di uno standard strutturato per i percorsi di derivazione multi-valuta e multi-account.</p>
+                    <p>Definition of a structured standard for multi-account and multi-currency derivation paths.</p>
                 </div>
                 <div class="timeline-item">
                     <span class="timeline-date">2015</span>
                     <h4>SHA-3 / Keccak</h4>
-                    <p>Standardizzazione di SHA-3 da parte del NIST sulla base della famiglia di algoritmi Keccak.</p>
+                    <p>Standardization of SHA-3 by NIST based on the Keccak algorithm family.</p>
                 </div>
                 <div class="timeline-item">
                     <span class="timeline-date">2016</span>
                     <h4>EIP-55 (Ethereum Checksum Addresses)</h4>
-                    <p>Introduzione del meccanismo di checksum basato sul maiuscolo/minuscolo per gli indirizzi Ethereum.</p>
+                    <p>Introduction of mixed-case checksum mechanisms for Ethereum addresses.</p>
                 </div>
             </div>
         </section>
 
         <!-- 6. SHA-2 vs Keccak/SHA-3 -->
         <section id="sha-comparison">
-            <h2>6. SHA-2 vs Keccak/SHA-3</h2>
-            <p>Sebbene appartengano entrambi alla famiglia delle funzioni di hash crittografiche ed condividano una parentela storica nello sviluppo delle funzioni standardizzate dal NIST, esistono differenze cruciali:</p>
+            <h2>SHA-2 vs Keccak/SHA-3</h2>
+            <p>Although both belong to the cryptographic hash family and share historical roots in NIST standardization contests, key distinctions exist:</p>
             <ul>
-                <li><strong>Architettura interna:</strong> SHA-2 si basa sulla ben nota struttura di Merkle–Damgård, mentre Keccak utilizza la costruzione a <em>sponge function</em> (funzione spugna), basata su permutazioni di stato e su una gestione flessibile di input e output.</li>
-                <li><strong>Keccak-256 vs SHA3-256:</strong> Ethereum utilizza <strong>Keccak-256</strong> (la proposta originaria sottomessa al concorso NIST), che differisce dal successivo standard ufficiale <strong>SHA3-256</strong> per via del byte di padding iniziale e dei parametri di domain separation adottati dal NIST prima della finalizzazione dello standard definitivo.</li>
+                <li><strong>Internal Architecture:</strong> SHA-2 relies on the traditional Merkle–Damgård construction, whereas Keccak utilizes a <em>sponge function</em> construction based on state permutations and flexible input/output handling.</li>
+                <li><strong>Keccak-256 vs SHA3-256:</strong> Ethereum employs <strong>Keccak-256</strong> (the original submission to the NIST competition), which differs from the final official NIST standard <strong>SHA3-256</strong> due to distinct padding bytes and domain separation parameters adopted before finalization.</li>
             </ul>
         </section>
 
-        <!-- 7. Conclusioni -->
+        <!-- 7. Conclusions -->
         <section id="conclusions">
-            <h2>7. Conclusioni</h2>
-            <p>La costruzione di un indirizzo Ethereum non si affida a un singolo algoritmo onnicomprensivo, bensì a una <strong>collaborazione modulare</strong> di tecniche specializzate:</p>
+            <h2>Conclusions</h2>
+            <p>The construction of an Ethereum address does not rely on a single all-encompassing algorithm, but rather on a <strong>modular collaboration</strong> of specialized techniques:</p>
             <ul>
-                <li><code>BIP-39 / BIP-32 / BIP-44</code> gestiscono in modo sicuro la memorizzazione umana e la derivazione gerarchica flessibile delle chiavi.</li>
-                <li><code>secp256k1</code> fornisce la solida relazione matematica asimmetrica per la coppia di chiavi e la firma digitale delle transazioni.</li>
-                <li><code>Keccak-256</code> assicura la riduzione unidirezionale e l'uniformità statistica necessarie per ricavare l'indirizzo pubblico senza esporre vulnerabilità.</li>
-                <li><code>EIP-55</code> aggiunge un livello di usabilità e sicurezza applicativa tramite il controllo degli errori di digitazione.</li>
+                <li><code>BIP-39 / BIP-32 / BIP-44</code> securely handle human memorization and flexible hierarchical key derivation.</li>
+                <li><code>secp256k1</code> provides the robust asymmetric mathematical relationship required for key pairs and transaction signing.</li>
+                <li><code>Keccak-256</code> ensures the one-way reduction and statistical uniformity needed to derive public addresses safely.</li>
+                <li><code>EIP-55</code> enhances usability and application security through typo detection mechanisms.</li>
             </ul>
-            <p>Questo approccio modulare permette a ciascun componente di eccellere nel proprio dominio specifico, garantendo robustezza complessiva, sicurezza e interoperabilità all'interno dell'ecosistema blockchain.</p>
+            <p>This modular design enables each component to excel in its specific domain, ensuring overall robustness, security, and interoperability across the blockchain ecosystem.</p>
         </section>
     </main>
 
