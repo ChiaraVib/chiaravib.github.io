@@ -274,8 +274,7 @@
                     </tr>
                     <tr>
                         <td><strong>Encoding</strong></td>
-                        <td>Representing data in a standardized format, such as hexadecimal notation. EIP-55 uses letter casing
-                             to encode checksum information in the textual representation of an Ethereum address.</td>
+                        <td>Representing data in a standardized format, such as hexadecimal notation. EIP-55 uses letter casing to encode checksum information in the textual representation of an Ethereum address.</td>
                     </tr>
                 </tbody>
             </table>
@@ -338,24 +337,24 @@
         <!-- 6. SHA-2 vs Keccak/SHA-3 -->
         <section id="sha-comparison">
             <h2>SHA-2 vs Keccak/SHA-3</h2>
-            <p>Although both belong to the cryptographic hash family and share historical roots in NIST standardization contests, key distinctions exist:</p>
+            <p>Although both belong to the family of cryptographic hash functions, SHA-2 and SHA-3 are based on different internal constructions.</p>
             <ul>
-                <li><strong>Internal Architecture:</strong> SHA-2 relies on the traditional Merkle–Damgård construction, whereas Keccak utilizes a <em>sponge function</em> construction based on state permutations and flexible input/output handling.</li>
-                <li><strong>Keccak-256 vs SHA3-256:</strong> Ethereum employs <strong>Keccak-256</strong> (the original submission to the NIST competition), which differs from the final official NIST standard <strong>SHA3-256</strong> due to distinct padding bytes and domain separation parameters adopted before finalization.</li>
+                <li><strong>Internal Architecture:</strong> SHA-2 relies on a Merkle–Damgård-based construction, whereas Keccak utilizes a sponge construction.</li>
+                <li><strong>Keccak-256 vs SHA3-256:</strong> SHA3-256 and Keccak-256 produce 256-bit digests, but apply different padding conventions and domain separation parameters.</li>
             </ul>
         </section>
 
         <!-- 7. Conclusions -->
         <section id="conclusions">
             <h2>Conclusions</h2>
-            <p>The construction of an Ethereum address does not rely on a single all-encompassing algorithm, but rather on a <strong>modular collaboration</strong> of specialized techniques:</p>
+            <p>The Ethereum wallet pipeline combines different cryptographic standards and primitives because each serves a distinct purpose:</p>
             <ul>
-                <li><code>BIP-39 / BIP-32 / BIP-44</code> securely handle human memorization and flexible hierarchical key derivation.</li>
-                <li><code>secp256k1</code> provides the robust asymmetric mathematical relationship required for key pairs and transaction signing.</li>
-                <li><code>Keccak-256</code> ensures the one-way reduction and statistical uniformity needed to derive public addresses safely.</li>
-                <li><code>EIP-55</code> enhances usability and application security through typo detection mechanisms.</li>
+                <li><code>BIP-39 / BIP-32 / BIP-44</code> support mnemonic-based recovery and hierarchical key derivation.</li>
+                <li><code>secp256k1</code> enables public-key generation and digital signatures.</li>
+                <li><code>Keccak-256</code> derives the address from the public key.</li>
+                <li><code>EIP-55</code> adds checksum information to its textual representation.</li>
             </ul>
-            <p>This modular design enables each component to excel in its specific domain, ensuring overall robustness, security, and interoperability across the blockchain ecosystem.</p>
+            <p>These components are complementary, and the security of the overall wallet depends on their correct implementation and use.</p>
         </section>
     </main>
 
