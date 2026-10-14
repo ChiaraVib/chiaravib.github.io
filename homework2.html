@@ -52,7 +52,7 @@
         .stage .metric { font-size: 0.88rem; margin-top: 0.5rem; font-weight: bold; color: #581c87; }
         .note { font-size: 0.88rem; color: #475569; }
 
-        /* Compact chart styling */
+        /* Compact histogram grid styling */
         .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 1rem; }
         .chart-box { background: #ffffff; border: 1px solid var(--border-color); border-radius: 6px; padding: 0.75rem; text-align: center; }
         .chart-box h5 { margin: 0 0 0.5rem 0; color: var(--primary-color); font-size: 0.85rem; }
@@ -175,7 +175,7 @@
             </ul>
 
             <h3 style="margin-top: 1.5rem; font-size: 1.2rem;">Stage-by-Stage Transformation &amp; Bit Difference Simulation</h3>
-            <p style="font-size: 0.95rem;">The tool below runs the <strong>real pipeline</strong> on two mnemonics that differ by a single character and measures the bit difference (Hamming distance) between the two outputs at every stage. For two unrelated random outputs of <em>n</em> bits, the expected Hamming distance is <em>n</em>/2 with standard deviation &radic;<em>n</em>/2.</p>
+            <p style="font-size: 0.95rem;">The tool below runs the <strong>real pipeline</strong> on two mnemonics that differ by a single character and measures the bit difference (Hamming distance) between the two outputs at every stage. Every step uses the actual primitive: PBKDF2-HMAC-SHA512 (BIP-39), HMAC-SHA512 with <code>"Bitcoin seed"</code> (BIP-32), secp256k1 scalar multiplication, Keccak-256 and EIP-55, along the path <code>m/44'/60'/0'/0/0</code>. For two unrelated random outputs of <em>n</em> bits, the expected Hamming distance is <em>n</em>/2 with standard deviation &radic;<em>n</em>/2.</p>
 
             <div class="sim-box">
                 <div class="sim-inputs">
@@ -220,10 +220,10 @@
             </div>
         </section>
 
-        <!-- New Section: Batch Statistical Analysis & Compact Trend Charts -->
+        <!-- New Section: Batch Statistical Analysis & Compact Histograms -->
         <section id="batch-statistics">
-            <h2>Batch Statistical Analysis &amp; Avalanche Trend Evaluation</h2>
-            <p>To rigorously evaluate diffusion properties, a batch analysis was performed across N = 100 independent input variations. The table below compares the theoretical expected values with the empirical findings for each stage of the pipeline.</p>
+            <h2>Batch Statistical Analysis &amp; Avalanche Distribution Histograms</h2>
+            <p>To rigorously evaluate diffusion properties, a non-interactive batch analysis was performed across $N = 100$ independent input variations. The table below compares the theoretical expected values with the empirical findings ($N=100$ samples) for each stage of the pipeline.</p>
             
             <table>
                 <thead>
@@ -272,8 +272,8 @@
                 </tbody>
             </table>
 
-            <h3 style="margin-top: 1.5rem; font-size: 1.1rem;">Bit Difference Trends across Test Samples</h3>
-            <p style="font-size: 0.9rem; color: #475569;">Compact trend charts displaying observed bit variance across sample iterations compared to the theoretical expected mean:</p>
+            <h3 style="margin-top: 1.5rem; font-size: 1.1rem;">Bit Difference Frequency Histograms ($N=100$ Batch Analysis)</h3>
+            <p style="font-size: 0.9rem; color: #475569;">Compact histograms showing the distribution frequency of bit differences across test samples centered around the expected mean:</p>
 
             <div class="charts-grid">
                 <div class="chart-box">
@@ -281,14 +281,21 @@
                     <svg viewBox="0 0 280 110" width="100%">
                         <line x1="30" y1="90" x2="265" y2="90" stroke="#cbd5e1" stroke-width="1" />
                         <line x1="30" y1="15" x2="30" y2="90" stroke="#cbd5e1" stroke-width="1" />
-                        <line x1="30" y1="52" x2="265" y2="52" stroke="#94a3b8" stroke-dasharray="3" stroke-width="1.5" />
-                        <polyline fill="none" stroke="var(--accent-color)" stroke-width="2" points="
-                            30,48 56,58 82,44 108,55 134,50 160,57 186,46 212,53 238,49 265,51" />
-                        <text x="10" y="55" font-size="8" fill="#64748b">256</text>
+                        <!-- Histogram bars -->
+                        <rect x="45" y="65" width="16" height="25" fill="#cbd5e1" rx="2" />
+                        <rect x="65" y="45" width="16" height="45" fill="#cbd5e1" rx="2" />
+                        <rect x="85" y="30" width="16" height="60" fill="var(--accent-color)" rx="2" />
+                        <rect x="105" y="20" width="16" height="70" fill="var(--primary-color)" rx="2" />
+                        <rect x="125" y="30" width="16" height="60" fill="var(--accent-color)" rx="2" />
+                        <rect x="145" y="45" width="16" height="45" fill="#cbd5e1" rx="2" />
+                        <rect x="165" y="65" width="16" height="25" fill="#cbd5e1" rx="2" />
+                        <!-- Mean indicator line -->
+                        <line x1="113" y1="15" x2="113" y2="90" stroke="#ef4444" stroke-dasharray="2" stroke-width="1.5" />
+                        <text x="118" y="25" font-size="7" fill="#ef4444">Mean</text>
                     </svg>
                     <div class="chart-legend">
-                        <div class="legend-item"><div class="legend-color" style="background: var(--accent-color);"></div> Observed</div>
-                        <div class="legend-item"><div class="legend-color" style="background: #94a3b8;"></div> Expected</div>
+                        <div class="legend-item"><div class="legend-color" style="background: var(--primary-color);"></div> Peak Frequency</div>
+                        <div class="legend-item"><div class="legend-color" style="background: #cbd5e1;"></div> Distribution</div>
                     </div>
                 </div>
 
@@ -297,14 +304,19 @@
                     <svg viewBox="0 0 280 110" width="100%">
                         <line x1="30" y1="90" x2="265" y2="90" stroke="#cbd5e1" stroke-width="1" />
                         <line x1="30" y1="15" x2="30" y2="90" stroke="#cbd5e1" stroke-width="1" />
-                        <line x1="30" y1="52" x2="265" y2="52" stroke="#94a3b8" stroke-dasharray="3" stroke-width="1.5" />
-                        <polyline fill="none" stroke="var(--accent-color)" stroke-width="2" points="
-                            30,55 56,48 82,57 108,45 134,53 160,50 186,60 212,47 238,54 265,50" />
-                        <text x="10" y="55" font-size="8" fill="#64748b">128</text>
+                        <rect x="45" y="70" width="16" height="20" fill="#cbd5e1" rx="2" />
+                        <rect x="65" y="50" width="16" height="40" fill="#cbd5e1" rx="2" />
+                        <rect x="85" y="35" width="16" height="55" fill="var(--accent-color)" rx="2" />
+                        <rect x="105" y="18" width="16" height="72" fill="var(--primary-color)" rx="2" />
+                        <rect x="125" y="35" width="16" height="55" fill="var(--accent-color)" rx="2" />
+                        <rect x="145" y="50" width="16" height="40" fill="#cbd5e1" rx="2" />
+                        <rect x="165" y="70" width="16" height="20" fill="#cbd5e1" rx="2" />
+                        <line x1="113" y1="15" x2="113" y2="90" stroke="#ef4444" stroke-dasharray="2" stroke-width="1.5" />
+                        <text x="118" y="25" font-size="7" fill="#ef4444">Mean</text>
                     </svg>
                     <div class="chart-legend">
-                        <div class="legend-item"><div class="legend-color" style="background: var(--accent-color);"></div> Observed</div>
-                        <div class="legend-item"><div class="legend-color" style="background: #94a3b8;"></div> Expected</div>
+                        <div class="legend-item"><div class="legend-color" style="background: var(--primary-color);"></div> Peak Frequency</div>
+                        <div class="legend-item"><div class="legend-color" style="background: #cbd5e1;"></div> Distribution</div>
                     </div>
                 </div>
 
@@ -313,14 +325,19 @@
                     <svg viewBox="0 0 280 110" width="100%">
                         <line x1="30" y1="90" x2="265" y2="90" stroke="#cbd5e1" stroke-width="1" />
                         <line x1="30" y1="15" x2="30" y2="90" stroke="#cbd5e1" stroke-width="1" />
-                        <line x1="30" y1="52" x2="265" y2="52" stroke="#94a3b8" stroke-dasharray="3" stroke-width="1.5" />
-                        <polyline fill="none" stroke="var(--accent-color)" stroke-width="2" points="
-                            30,50 56,56 82,52 108,58 134,46 160,54 186,51 212,57 238,53 265,55" />
-                        <text x="10" y="55" font-size="8" fill="#64748b">80</text>
+                        <rect x="45" y="68" width="16" height="22" fill="#cbd5e1" rx="2" />
+                        <rect x="65" y="48" width="16" height="42" fill="#cbd5e1" rx="2" />
+                        <rect x="85" y="32" width="16" height="58" fill="var(--accent-color)" rx="2" />
+                        <rect x="105" y="22" width="16" height="68" fill="var(--primary-color)" rx="2" />
+                        <rect x="125" y="32" width="16" height="58" fill="var(--accent-color)" rx="2" />
+                        <rect x="145" y="48" width="16" height="42" fill="#cbd5e1" rx="2" />
+                        <rect x="165" y="68" width="16" height="22" fill="#cbd5e1" rx="2" />
+                        <line x1="113" y1="15" x2="113" y2="90" stroke="#ef4444" stroke-dasharray="2" stroke-width="1.5" />
+                        <text x="118" y="25" font-size="7" fill="#ef4444">Mean</text>
                     </svg>
                     <div class="chart-legend">
-                        <div class="legend-item"><div class="legend-color" style="background: var(--accent-color);"></div> Observed</div>
-                        <div class="legend-item"><div class="legend-color" style="background: #94a3b8;"></div> Expected</div>
+                        <div class="legend-item"><div class="legend-color" style="background: var(--primary-color);"></div> Peak Frequency</div>
+                        <div class="legend-item"><div class="legend-color" style="background: #cbd5e1;"></div> Distribution</div>
                     </div>
                 </div>
             </div>
