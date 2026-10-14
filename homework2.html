@@ -254,11 +254,11 @@
                 <tbody>
                     <tr>
                         <td><strong>Key Generation</strong></td>
-                        <td>The process of creating an initial random secret (private key or seed) from a secure entropy source.</td>
+                        <td>The process of creating an initial secret material using a cryptographically secure random source.</td>
                     </tr>
                     <tr>
                         <td><strong>Key Derivation</strong></td>
-                        <td>A deterministic process to compute child keys from a master key or seed (e.g., BIP-32/44).</td>
+                        <td>A deterministic process to generate additional keys from existing secret material.</td>
                     </tr>
                     <tr>
                         <td><strong>Public-Key Cryptography</strong></td>
@@ -274,7 +274,8 @@
                     </tr>
                     <tr>
                         <td><strong>Encoding</strong></td>
-                        <td>Converting binary data into a readable or standardized textual format (e.g., Hexadecimal / Base58).</td>
+                        <td>Representing data in a standardized format, such as hexadecimal notation. EIP-55 uses letter casing
+                             to encode checksum information in the textual representation of an Ethereum address.</td>
                     </tr>
                 </tbody>
             </table>
