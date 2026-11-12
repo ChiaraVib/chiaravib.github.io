@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Statistics Lab · Homework 5</title>
+<style>
+:root{--dark:#24183D;--pri:#49336B;--acc:#8062AD;--lt:#B99BDD;--bg:#F7F5FA;--bd:#E8E2EF;--lav:#E9E1F7;--tx:#2f2745}
+*{box-sizing:border-box}body{margin:0;font:16px/1.6 system-ui,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx)}
+header{background:linear-gradient(135deg,var(--dark),var(--pri));color:#fff;padding:14px 5vw;display:flex;gap:14px;align-items:center;justify-content:space-between}
+header b{letter-spacing:.5px}header small{opacity:.75}
+main{max-width:1100px;margin:auto;padding:24px 16px 60px}
+h1{color:var(--dark);font-size:clamp(1.8rem,4vw,2.6rem);margin:.2em 0}h2{color:var(--dark);margin:1.6em 0 .2em}h3{color:var(--pri);margin:1em 0 .3em}
+.eyebrow{color:var(--acc);font-weight:700;letter-spacing:.12em;font-size:.8rem;text-transform:uppercase}
+.card{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:20px;margin:14px 0;box-shadow:0 2px 10px rgba(73,51,107,.05)}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr))}
+.tile{cursor:pointer;transition:.15s;border-top:5px solid var(--acc)}.tile:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(73,51,107,.16)}
+.tile.e2{border-top-color:var(--lt)}.tile .n{font-size:2.4rem;font-weight:800;color:var(--lt)}
+button{background:var(--pri);color:#fff;border:0;border-radius:10px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer}button:hover{background:var(--acc)}
+button.ghost{background:#fff;color:var(--pri);border:1px solid var(--lt)}button.ghost:hover{background:var(--lav)}
+input,select{font:inherit;padding:7px 10px;border:1px solid var(--lt);border-radius:8px;background:#fff;color:var(--tx);max-width:100%}
+label{display:block;font-size:.85rem;color:var(--pri);font-weight:600;margin:10px 0 3px}
+canvas{width:100%;height:300px;display:block}.sm canvas{height:230px}
+table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{padding:7px 10px;border-bottom:1px solid var(--bd);text-align:right}th:first-child,td:first-child{text-align:left}th{background:var(--lav);color:var(--dark)}
+.wrap{overflow-x:auto}.fm{font-family:Cambria,"Times New Roman",serif;font-size:1.05rem;background:var(--bg);border-left:4px solid var(--lt);padding:8px 14px;margin:8px 0;overflow-x:auto;white-space:normal;word-break:break-word}.cols>*,.grid>*{min-width:0}sub,sup{line-height:0}
+.pill{display:inline-block;background:var(--lav);color:var(--pri);border-radius:99px;padding:2px 12px;font-size:.82rem;margin:2px 4px 2px 0}
+.v2 header{background:linear-gradient(135deg,#3a2a66,#7d65b5)}.v2 .eyebrow{color:#8a74c4}
+.big{font-size:2.2rem;font-weight:800;color:var(--pri)}.warn{color:#8a3b86;font-size:.88rem}
+.hide{display:none}ul{padding-left:20px}.cols{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr))}
+.leg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin:0 4px 0 10px;vertical-align:-1px}
+</style></head><body>
+<header><b>◆ STATISTICS LAB · Homework 5</b><span><button class="ghost" id="home" onclick="go('home')">⌂ Home</button></span></header>
+<main>
+<!-- HOME -->
+<section id="v-home">
+<div class="eyebrow">Numerical methods &amp; mathematical analysis</div>
+<h1>Explore numerical integration and probability</h1>
+<p>Interactive experiments, mathematical explanations and numerical comparisons. Choose functions, tune the parameters, watch the algorithms work and compare accuracy, convergence and speed.</p>
+<div class="grid">
+<div class="card tile" onclick="go('ex1')"><div class="n">01</div><h3>Riemann &amp; Lebesgue</h3><p>Numerical integration by partitioning the domain or the range, including improper and pathological functions.</p><button>Open Exercise 1 →</button></div>
+<div class="card tile e2" onclick="go('ex2')"><div class="n">02</div><h3>Normal CDF</h3><p>Simpson's rule, erf power series and the Abramowitz–Stegun approximation, checked against NIST values.</p><button>Open Exercise 2 →</button></div>
+</div></section>
+
+<!-- EXERCISE 1 -->
+<section id="v-ex1" class="hide">
+<div class="eyebrow">Exercise 1</div><h1>Riemann and Lebesgue Integration</h1>
+<h2><span class="eyebrow">01 · Introduction</span><br>Understanding the two approaches</h2>
+<div class="cols">
+<div class="card sm"><h3>Riemann: partition the <i>x</i>-axis</h3><canvas id="introR"></canvas><div class="fm">I<sub>R</sub> = Σ f(x<sub>i</sub>*)·Δx, &nbsp; Δx = (b−a)/n, &nbsp; x<sub>i</sub>* = a+(i+½)Δx</div></div>
+<div class="card sm"><h3>Lebesgue: partition the <i>y</i>-axis</h3><canvas id="introL"></canvas><div class="fm">I<sub>L</sub> ≈ Σ y<sub>j</sub>*·μ(A<sub>j</sub>), &nbsp; A<sub>j</sub> = {x : f(x) ∈ B<sub>j</sub>}</div></div></div>
+<p>The Lebesgue-inspired method is a <b>numerical discretisation</b>, not an exact measure computation: μ(A<sub>j</sub>) is estimated as (points in level j / N)·(b−a). Here <b>n</b> (Riemann subintervals) and <b>N</b> (domain samples) count points on the x-axis, while <b>k</b> counts value levels on the y-axis; they are different quantities.</p>
+
+<h2><span class="eyebrow">02 · Function Explorer</span><br>Choose a function</h2>
+<div class="card"><label>Function</label><select id="fsel"></select>
+<div id="finfo" style="margin-top:12px"></div>
+<div id="epsbox" class="hide"><label>Truncation ε (domain becomes [ε, 1])</label><input id="eps" type="number" value="0.001" min="1e-9" max="0.5" step="any"></div></div>
+
+<h2><span class="eyebrow">03 · Numerical Experiments</span><br>Configure and run the methods</h2>
+<div class="cols">
+<div class="card"><h3>Riemann (Midpoint Rule)</h3><label>Number of subintervals n</label><input id="rn" type="number" value="100" min="1" max="200000" list="nl"><datalist id="nl"><option>10<option>50<option>100<option>500<option>1000<option>5000</datalist><p><button onclick="runR()">Run Riemann Integration</button></p></div>
+<div class="card"><h3>Lebesgue (range partition)</h3><label>Number of domain samples N</label><input id="ln" type="number" value="1000" min="2" max="200000" list="nl"><label>Number of value intervals k</label><input id="lk" type="number" value="50" min="1" max="5000"><label>Representative value</label><input value="Midpoint of each value interval" disabled><p><button onclick="runL()">Run Lebesgue Integration</button></p></div></div>
+<p><button onclick="runBoth()">▶ Run Both Methods</button></p>
+
+<h2><span class="eyebrow">04 · Results &amp; Comparison</span><br>Visualize the results</h2>
+<div class="cols"><div class="card"><h3>Graph 1 – Riemann approximation</h3><canvas id="g1"></canvas></div>
+<div class="card"><h3>Graph 2 – Lebesgue approximation</h3><canvas id="g2"></canvas></div></div>
+<div class="card"><h3>Graph 3 – Convergence comparison</h3><div class="leg"><i style="background:#49336B"></i>Riemann (n = N)<i style="background:#C07AD9"></i>Lebesgue (N samples, k = N levels)</div><canvas id="g3"></canvas><p id="convnote" class="warn"></p></div>
+<div class="card wrap"><h3>Results table</h3><table id="rt"></table><p class="warn">Times are the mean of 20 repetitions measured with performance.now(); drawing is excluded.</p></div>
+
+<h2><span class="eyebrow">05 · Discussion</span><br>Interpretation and conclusions</h2>
+<div class="card" id="disc"></div>
+<div class="card"><h3>Conclusion of Exercise 1</h3><p>For Riemann-integrable functions the two approaches converge to the same integral, provided the approximations are built correctly. The real difference lies in how the computation is organised (slicing the domain versus grouping points by value) and in how each approach behaves on unusual functions: unbounded ones need truncation, and the Dirichlet function exposes the fact that a finite sample cannot tell rational from irrational numbers.</p></div>
+</section>
+
+<!-- EXERCISE 2 -->
+<section id="v-ex2" class="hide">
+<div class="eyebrow">Exercise 2</div><h1>Numerical Computation of the Normal CDF</h1>
+<h2><span class="eyebrow">01 · Mathematical Background</span><br>The standard normal distribution</h2>
+<div class="card"><div class="fm">φ(x) = (1/√(2π))·e<sup>−x²/2</sup> &nbsp;&nbsp;&nbsp; Φ(x) = ∫<sub>−∞</sub><sup>x</sup> φ(t) dt = P(Z ≤ x)</div>
+<p>Φ(0) = 0.5 and Φ(1) ≈ 0.84134: about 84.13% of a standard normal variable lies below 1. Move the cursor to see the cumulative area.</p>
+<label>x = <b id="gxv">1.00</b></label><input id="gx" type="range" min="-4" max="4" step="0.01" value="1" style="width:100%">
+<div class="cols sm"><div><canvas id="pdfc"></canvas></div><div><canvas id="cdfc"></canvas></div></div></div>
+
+<h2><span class="eyebrow">02 · Theoretical Foundations</span><br>Why is the CDF not elementary?</h2>
+<div class="card"><p><b>Liouville's theorem</b> on integration in finite terms says that if an elementary function has an elementary antiderivative, the antiderivative has a restricted form. For f = e<sup>h</sup> with h rational, it exists only if ∫e<sup>h</sup> dx = r(x)·e<sup>h</sup> with r a rational function, i.e.</p>
+<div class="fm">r′(x) + h′(x)·r(x) = 1</div>
+<p>For h = −x² this reads r′ − 2x·r = 1. If r is a polynomial of degree d ≥ 0, the left side has degree d+1 ≥ 1, never the constant 1 (and r = 0 gives 0). If r has a pole of order m at some point, r′ has a pole of order m+1 while 2x·r has order at most m, so they cannot cancel. No rational r exists, hence <b>∫e<sup>−x²</sup>dx is not elementary</b> (see B. Conrad's Stanford notes on this).</p>
+<p>This does <i>not</i> mean the integral fails to exist or cannot be computed: only that no finite combination of polynomials, exponentials, logarithms, trigonometric and algebraic functions gives its antiderivative.</p>
+<h3>The error function</h3>
+<div class="fm">erf(x) = (2/√π)·∫<sub>0</sub><sup>x</sup> e<sup>−t²</sup> dt &nbsp;&nbsp;&nbsp; Φ(x) = ½·[1 + erf(x/√2)]</div>
+<p>The relation Φ ↔ erf is an <b>exact identity</b>, so special functions give an exact analytical representation. But erf is itself non-elementary: to get a number we still need numerical integration, a truncated series or a rational approximation. That is exactly what the three methods below do.</p></div>
+
+<h2><span class="eyebrow">03 · Method Explorer</span><br>Compare numerical algorithms</h2>
+<div class="cols">
+<div class="card"><h3>A · Simpson (integration)</h3><div class="fm">Φ(x) = 0.5 ± (h/3)·[f<sub>0</sub> + f<sub>n</sub> + 4Σ<sub>odd</sub> + 2Σ<sub>even</sub>]</div><p>Integrates φ from 0 to |x| and uses symmetry. Accuracy set by the even number of subintervals n; cost grows linearly with n.</p><label>Subintervals n (even)</label><input id="sn" type="number" value="200" min="2" max="20000" step="2"></div>
+<div class="card"><h3>B · erf power series</h3><div class="fm">erf(z) = (2/√π)·Σ<sub>n≥0</sub> (−1)<sup>n</sup> z<sup>2n+1</sup> / (n!(2n+1))</div><p>Terms are added until the next one falls below the tolerance. Slower and less stable for large |x| (alternating terms, cancellation).</p><label>Tolerance</label><select id="stol"><option value="1e-4">1e-4<option value="1e-8">1e-8<option value="1e-12" selected>1e-12<option value="1e-16">1e-16</select></div>
+<div class="card"><h3>C · Abramowitz &amp; Stegun</h3><div class="fm">Φ(x) ≈ 1 − φ(x)(b<sub>1</sub>t + … + b<sub>5</sub>t<sup>5</sup>), &nbsp; t = 1/(1+0.2316419x)</div><p>Fixed-cost polynomial approximation (formula 26.2.17), maximum absolute error about 7.5·10<sup>−8</sup>. It is an approximation, not an exact value.</p><p class="pill">no parameters</p></div></div>
+
+<h2><span class="eyebrow">04 · Interactive Calculator</span><br>Calculate the normal CDF</h2>
+<div class="card"><label>Input value x</label><input id="cx" type="number" value="1" step="0.1" min="-6" max="6">
+<div class="grid" style="margin-top:12px"><div><div class="eyebrow">Simpson</div><div class="big" id="o1"></div></div><div><div class="eyebrow">erf series</div><div class="big" id="o2"></div><small id="o2t"></small></div><div><div class="eyebrow">A&amp;S</div><div class="big" id="o3"></div></div></div>
+<p id="oref" class="warn"></p></div>
+
+<h2><span class="eyebrow">05 · Accuracy &amp; Performance</span><br>Numerical comparison</h2>
+<div class="card"><label>Error measured against</label><select id="refsel"><option value="nist">NIST table (rounded to 5 decimals)<option value="hp">High-accuracy internal reference (series, tol 1e-16)</select>
+<p class="warn">NIST values are rounded to 5 decimals, so errors below about 5·10<sup>−6</sup> cannot be resolved against that table; the internal reference reveals the true differences.</p></div>
+<div class="card wrap"><h3>Results table</h3><table id="t2"></table></div>
+<div class="cols"><div class="card"><h3>Graph 2 – Numerical accuracy</h3><div class="leg"><i style="background:#49336B"></i>Simpson<i style="background:#8062AD"></i>Series<i style="background:#C07AD9"></i>A&amp;S</div><canvas id="g4"></canvas></div>
+<div class="card"><h3>Graph 3 – Execution time per evaluation (µs, log)</h3><canvas id="g5"></canvas><p><button class="ghost" onclick="bench()">Repeat benchmark</button></p></div></div>
+<div class="card wrap"><h3>Summary by method</h3><table id="t3"></table></div>
+
+<h2><span class="eyebrow">06 · Discussion &amp; Conclusions</span><br>What did we learn?</h2>
+<div class="card" id="disc2"></div>
+</section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s),gcd=(a,b)=>{while(b)[a,b]=[b,a%b];return a};
+const e8=v=>isFinite(v)?v.toFixed(8):'—',ex=v=>v===0?'0':v.toExponential(2);
+/* ---------- navigation ---------- */
+function go(v){for(const s of ['home','ex1','ex2'])$('#v-'+s).classList.toggle('hide',s!==v);document.body.className=v==='ex2'?'v2':'';
+ try{history.replaceState(null,'','#'+v)}catch(e){}scrollTo(0,0);requestAnimationFrame(()=>{if(v==='ex1')draw1();if(v==='ex2')draw2()})}
+/* ---------- plotting helper ---------- */
+function mk(cv,xr,yr,o={}){const d=devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;cv.width=w*d;cv.height=h*d;const c=cv.getContext('2d');c.scale(d,d);
+ const L=56,R=12,T=12,B=o.nox?26:32,tf=(v,l)=>l?Math.log10(v):v;
+ const X=x=>L+(tf(x,o.lx)-tf(xr[0],o.lx))/(tf(xr[1],o.lx)-tf(xr[0],o.lx))*(w-L-R),Y=y=>h-B-(tf(y,o.ly)-tf(yr[0],o.ly))/(tf(yr[1],o.ly)-tf(yr[0],o.ly))*(h-T-B);
+ const ft=v=>Math.abs(v)>=1e4||(v!==0&&Math.abs(v)<1e-3)?v.toExponential(0):''+ +v.toPrecision(3);
+ c.font='11px system-ui';c.lineWidth=1;c.strokeStyle='#E8E2EF';c.fillStyle='#6b5f85';
+ const ticks=(r,l)=>{const t=[];if(l){for(let e=Math.ceil(Math.log10(r[0])-1e-9);e<=Math.floor(Math.log10(r[1])+1e-9);e++)t.push(10**e)}else for(let i=0;i<=5;i++)t.push(r[0]+(r[1]-r[0])*i/5);return t};
+ for(const y of ticks(yr,o.ly)){c.beginPath();c.moveTo(L,Y(y));c.lineTo(w-R,Y(y));c.stroke();c.textAlign='right';c.fillText(ft(y),L-5,Y(y)+4)}
+ if(!o.nox)for(const x of ticks(xr,o.lx)){c.beginPath();c.moveTo(X(x),T);c.lineTo(X(x),h-B);c.stroke();c.textAlign='center';c.fillText(ft(x),X(x),h-B+14)}
+ c.strokeStyle='#8062AD';c.beginPath();c.moveTo(L,T);c.lineTo(L,h-B);c.lineTo(w-R,h-B);c.stroke();
+ c.fillStyle='#49336B';c.textAlign='right';if(o.xl)c.fillText(o.xl,w-R,h-2);c.textAlign='left';if(o.yl)c.fillText(o.yl,L+4,T+8);
+ c.save();c.beginPath();c.rect(L,T,w-L-R,h-T-B);c.restore();return{c,X,Y,w,h,L,R,T,B}}
+/* ---------- Exercise 1: functions (theory kept apart from algorithms) ---------- */
+const PI=Math.PI;
+const F={
+ sin:{name:'Sine function',tex:'f(x) = sin(x)',a:0,b:PI,exact:()=>2,type:'Smooth',f:x=>Math.sin(x)},
+ sq:{name:'Parabola',tex:'f(x) = x²',a:0,b:1,exact:()=>1/3,type:'Polynomial',f:x=>x*x},
+ abs:{name:'Absolute value',tex:'f(x) = |x − 0.5|',a:0,b:1,exact:()=>.25,type:'Continuous, not differentiable at 0.5',f:x=>Math.abs(x-.5)},
+ step:{name:'Step function (1, 3)',tex:'f(x) = 1 if x < 0.5, 3 if x ≥ 0.5',a:0,b:1,exact:()=>2,type:'Discontinuous',f:x=>x<.5?1:3},
+ inv:{name:'Reciprocal square root',tex:'f(x) = 1/√x, x ∈ (0, 1]',a:0,b:1,exact:e=>2-2*Math.sqrt(e),type:'Unbounded, improper integral',f:x=>1/Math.sqrt(x)},
+ sinc:{name:'Sinc function',tex:'f(x) = sin(x)/x, f(0) := 1',a:0,b:PI,exact:()=>1.8519370519824662,type:'Removable singularity (exact = Si(π))',f:x=>x===0?1:Math.sin(x)/x},
+ dir:{name:'Dirichlet function',tex:'f(x) = 1 if x rational, 0 if irrational',a:0,b:1,exact:()=>0,type:'Pathological: not Riemann-integrable (Lebesgue integral = 0)',f:()=>1},
+ tho:{name:"Thomae's function",tex:'f(p/q) = 1/q (lowest terms), 0 if irrational',a:0,b:1,exact:()=>0,type:'Pathological: Riemann-integrable, integral 0',f:(x,p,q)=>gcd(p,q)/q}
+};
+for(const k in F){F[k].id=k;$('#fsel').add(new Option(F[k].name,k))}
+const cur=()=>F[$('#fsel').value],eps=()=>Math.max(1e-9,+$('#eps').value||1e-3);
+const dom=()=>{const f=cur();return f.id==='inv'?[eps(),1]:[f.a,f.b]};
+const exact=()=>cur().exact(eps());
+/* a sample point is the rational p/q, so Thomae can use exact denominators */
+const ev=(fn,a,b,p,q)=>fn.f(a+(b-a)*p/q,p,q);
+function riemann(fn,a,b,n){let s=0;for(let i=0;i<n;i++)s+=ev(fn,a,b,2*i+1,2*n);return s*(b-a)/n}
+function lebesgue(fn,a,b,N,k){const v=new Float64Array(N);let m=Infinity,M=-Infinity;
+ for(let i=0;i<N;i++){const y=ev(fn,a,b,2*i+1,2*N);v[i]=y;if(y<m)m=y;if(y>M)M=y}
+ const dy=(M-m)/k,cnt=new Array(k).fill(0);for(let i=0;i<N;i++)cnt[dy>0?Math.min(k-1,Math.floor((v[i]-m)/dy)):0]++;
+ let s=0;for(let j=0;j<k;j++)s+=(m+(j+.5)*dy)*cnt[j]/N*(b-a);return{I:s,m,M,dy,k}}
+const timeIt=(f,r=20)=>{f();const t=performance.now();let v;for(let i=0;i<r;i++)v=f();return[v,(performance.now()-t)/r]};
+/* ---------- Exercise 1: drawing ---------- */
+function yrange(fn,a,b){if(fn.id==='dir')return[0,1.3];if(fn.id==='tho')return[0,1.1];let mn=1e9,mx=-1e9;
+ for(let i=0;i<300;i++){const y=ev(fn,a,b,2*i+1,600);mn=Math.min(mn,y);mx=Math.max(mx,y)}return[Math.min(0,mn),mx*1.1||1]}
+function curve(P,fn,a,b,col){const c=P.c;c.strokeStyle=c.fillStyle=col;c.lineWidth=2;c.beginPath();
+ if(fn.id==='dir'){c.setLineDash([2,5]);for(const y of[0,1]){c.moveTo(P.X(a),P.Y(y));c.lineTo(P.X(b),P.Y(y))}c.stroke();c.setLineDash([]);return}
+ if(fn.id==='tho'){for(let q=1;q<=40;q++)for(let p=0;p<=q;p++)if(gcd(p,q)===1){c.beginPath();c.arc(P.X(p/q),P.Y(1/q),2,0,7);c.fill()}return}
+ for(let i=0;i<=500;i++){const x=P.X(a+(b-a)*i/500),y=P.Y(ev(fn,a,b,i,500));i?c.lineTo(x,y):c.moveTo(x,y)}c.stroke()}
+function drawR(cv,fn,a,b,n){const[lo,hi]=yrange(fn,a,b),P=mk(cv,[a,b],[lo,hi],{xl:'x',yl:'f(x)'}),c=P.c,dx=(b-a)/n;
+ c.fillStyle='rgba(128,98,173,.35)';c.strokeStyle='#49336B';c.lineWidth=1;
+ for(let i=0;i<n;i++){const y=Math.min(hi,ev(fn,a,b,2*i+1,2*n)),x1=P.X(a+i*dx),w=P.X(a+(i+1)*dx)-x1;c.fillRect(x1,P.Y(Math.max(y,0)),w,P.Y(Math.min(y,0))-P.Y(Math.max(y,0)));if(n<=150)c.strokeRect(x1,P.Y(Math.max(y,0)),w,P.Y(Math.min(y,0))-P.Y(Math.max(y,0)))}
+ if(n<=60){c.fillStyle='#24183D';for(let i=0;i<n;i++){c.beginPath();c.arc(P.X(a+(i+.5)*dx),P.Y(Math.min(hi,ev(fn,a,b,2*i+1,2*n))),2.5,0,7);c.fill()}}
+ curve(P,fn,a,b,'#24183D')}
+function drawL(cv,fn,a,b,N,k){const[lo,hi]=yrange(fn,a,b),P=mk(cv,[a,b],[lo,hi],{xl:'x',yl:'f(x)'}),c=P.c,Lb=lebesgue(fn,a,b,N,k),C=400;
+ for(let i=0;i<C;i++){const y=ev(fn,a,b,2*i+1,2*C),j=Lb.dy>0?Math.min(k-1,Math.floor((y-Lb.m)/Lb.dy)):0,lv=Lb.m+(j+.5)*Lb.dy,x1=P.X(a+(b-a)*i/C);
+  c.fillStyle=`hsla(${280-j*40/k},45%,${75-35*j/k}%,.75)`;const t=P.Y(Math.min(hi,Math.max(lv,0))),z=P.Y(Math.min(lv,0));c.fillRect(x1,t,(P.X(b)-P.X(a))/C+.6,z-t)}
+ c.strokeStyle='rgba(73,51,107,.5)';c.lineWidth=1;c.setLineDash([4,4]);if(k<=60)for(let j=0;j<=k;j++){const y=Lb.m+j*Lb.dy;if(y>hi)break;c.beginPath();c.moveTo(P.L,P.Y(y));c.lineTo(P.w-P.R,P.Y(y));c.stroke()}c.setLineDash([]);
+ curve(P,fn,a,b,'#24183D')}
+let S={},CV=null;
+function conv(){const fn=cur(),[a,b]=dom(),ex0=exact(),Ns=[10,20,50,100,200,500,1000,2000,5000];
+ return Ns.map(N=>({N,r:Math.abs(riemann(fn,a,b,N)-ex0),l:Math.abs(lebesgue(fn,a,b,N,N).I-ex0)}))}
+const slope=(C,key)=>{const p=C.filter(d=>d[key]>1e-14);if(p.length<3)return NaN;const x=p.map(d=>Math.log10(d.N)),y=p.map(d=>Math.log10(d[key])),mx=x.reduce((s,v)=>s+v)/x.length,my=y.reduce((s,v)=>s+v)/y.length;
+ return x.reduce((s,v,i)=>s+(v-mx)*(y[i]-my),0)/x.reduce((s,v)=>s+(v-mx)**2,0)};
+function draw3(){if(!CV)return;const fl=1e-17,all=CV.flatMap(d=>[d.r,d.l]).map(v=>Math.max(v,fl)),lo=10**Math.floor(Math.log10(Math.min(...all))),hi=10**Math.ceil(Math.log10(Math.max(...all)));
+ const P=mk($('#g3'),[10,5000],[lo,hi===lo?lo*10:hi],{lx:1,ly:1,xl:'subdivisions / samples',yl:'absolute error'}),c=P.c;
+ for(const[k,col]of[['r','#49336B'],['l','#C07AD9']]){c.strokeStyle=c.fillStyle=col;c.lineWidth=2;c.beginPath();CV.forEach((d,i)=>{const x=P.X(d.N),y=P.Y(Math.max(d[k],fl));i?c.lineTo(x,y):c.moveTo(x,y)});c.stroke();CV.forEach(d=>{c.beginPath();c.arc(P.X(d.N),P.Y(Math.max(d[k],fl)),3.5,0,7);c.fill()})}
+ $('#convnote').textContent=`Observed convergence order (log-log slope): Riemann ≈ ${slope(CV,'r').toFixed(2)}, Lebesgue ≈ ${slope(CV,'l').toFixed(2)}. Exact errors equal to 0 are drawn at 1e-17.`}
+function draw1(){if($('#v-ex1').classList.contains('hide'))return;const fn=cur(),[a,b]=dom();
+ drawR($('#introR'),F.sin,0,PI,10);drawL($('#introL'),F.sin,0,PI,2000,6);
+ drawR($('#g1'),fn,a,b,Math.max(1,+$('#rn').value|0));drawL($('#g2'),fn,a,b,Math.max(2,+$('#ln').value|0),Math.max(1,+$('#lk').value|0));draw3()}
+function table1(){const R=S.R,L=S.L,e=exact();const row=(n,r,l)=>`<tr><td>${n}</td><td>${r}</td><td>${l}</td></tr>`;
+ $('#rt').innerHTML=`<tr><th>Metric</th><th>Riemann</th><th>Lebesgue</th></tr>`+row('Reference value',e8(e),e8(e))+row('Approximate integral',R?e8(R.I):'—',L?e8(L.I):'—')+row('Absolute error',R?ex(Math.abs(R.I-e)):'—',L?ex(Math.abs(L.I-e)):'—')+
+ row('Number of evaluations',R?R.n:'—',L?L.N+' (k = '+L.k+')':'—')+row('Execution time (ms)',R?R.t.toFixed(4):'—',L?L.t.toFixed(4):'—')}
+function runR(){const fn=cur(),[a,b]=dom(),n=Math.max(1,+$('#rn').value|0),[I,t]=timeIt(()=>riemann(fn,a,b,n));S.R={I,t,n};after()}
+function runL(){const fn=cur(),[a,b]=dom(),N=Math.max(2,+$('#ln').value|0),k=Math.max(1,+$('#lk').value|0),[r,t]=timeIt(()=>lebesgue(fn,a,b,N,k));S.L={I:r.I,t,N,k};after()}
+function runBoth(){runR();runL()}
+function after(){CV=conv();table1();draw1();disc1()}
+function disc1(){const f=cur(),e=exact(),R=S.R,L=S.L,id=f.id,li=[];const er=R?ex(Math.abs(R.I-e)):'–',el=L?ex(Math.abs(L.I-e)):'–';
+ if(['sin','sq','sinc'].includes(id))li.push('Both methods approximate the same integral.','The function is continuous, hence Riemann-integrable, so both discretisations converge to the same value as they are refined.','The midpoint rule benefits from smoothness (fast error decay), whereas the range-partition estimate is limited by the level width Δy and by how finely the preimages are sampled.');
+ if(id==='abs')li.push('The function is continuous but not differentiable at x = 0.5, so it is still Riemann-integrable and both methods converge to 1/4.','The kink slightly reduces the smoothness advantage of the midpoint rule, but the error still decreases steadily.');
+ if(id==='step')li.push('The function is discontinuous but has a single jump, so it is Riemann-integrable and both methods converge to 2.','The Lebesgue view is very natural here: only two levels (1 and 3) are attained, and the preimages are [0, 0.5) and [0.5, 1], each of measure 0.5. Any bias comes only from the representative level values.');
+ if(id==='inv')li.push('The function is unbounded near zero, so a finite partition of the range cannot cover all of it directly: a truncation to [ε, 1] is needed (ε = '+eps()+').','On [ε, 1] the exact value is 2 − 2√ε, while the improper integral over (0, 1] converges to 2.','Truncation error for the full integral: '+ex(2-exact())+'. Shrinking ε reduces it, but the range [1, 1/√ε] gets wider, so more levels are needed.','Truncated values: '+[1e-1,1e-2,1e-3,1e-4,1e-6].map(x=>`ε=${x}: ${(2-2*Math.sqrt(x)).toFixed(6)}`).join('; ')+'.');
+ if(id==='dir')li.push('The function is <b>not Riemann-integrable</b> (upper sum 1, lower sum 0 on every partition); its Lebesgue integral is 0 because the rationals have measure zero.','Finite numerical sampling cannot distinguish rational from irrational numbers: every floating-point sample is a rational number, so the code evaluates f = 1 everywhere and both estimates give 1 instead of 0.','This is not a bug to hide: it shows the limit of sampling-based approximations of the Lebesgue integral.');
+ if(id==='tho')li.push("Thomae's function is discontinuous at every rational point but continuous at the irrationals, so it is Riemann-integrable with integral 0 (Lebesgue integral too).",'Samples are treated as exact fractions p/q, so 1/q uses the reduced denominator. The peaks 1/q are ever smaller and rarer, and both estimates tend to 0.','The level-based estimate depends on the largest sampled value, so its representative values are biased for small N.');
+ const cs=CV?`Current run: Riemann error ${er}, Lebesgue error ${el}. Observed orders – Riemann ≈ ${slope(CV,'r').toFixed(2)}, Lebesgue ≈ ${slope(CV,'l').toFixed(2)}.`:'';
+ $('#disc').innerHTML='<ul>'+li.map(t=>'<li>'+t+'</li>').join('')+'</ul><p><b>'+cs+'</b></p>'}
+$('#fsel').onchange=()=>{const f=cur();$('#epsbox').classList.toggle('hide',f.id!=='inv');
+ $('#finfo').innerHTML=`<div class="fm">${f.tex}</div><span class="pill">Domain: ${f.id==='inv'?'(0, 1] → [ε, 1]':'['+(f.a)+', '+(f.b===PI?'π':f.b)+']'}</span><span class="pill">Type: ${f.type}</span><span class="pill">Reference integral: ${f.id==='dir'?'0 (Lebesgue)':f.id==='sinc'?'Si(π) ≈ 1.85194':f.id==='inv'?'2 (improper); 2−2√ε on [ε,1]':e8(f.exact())}</span>`;S={};runBoth()};
+$('#eps').onchange=()=>{$('#fsel').onchange()};['rn','ln','lk'].forEach(i=>$('#'+i).oninput=draw1);
+
+/* ---------- Exercise 2 ---------- */
+const phi=x=>Math.exp(-x*x/2)/Math.sqrt(2*PI);
+function simpson(x,n){const A=Math.abs(x);if(!A)return.5;const h=A/n;let s=phi(0)+phi(A);for(let i=1;i<n;i++)s+=(i%2?4:2)*phi(i*h);const I=s*h/3;return x>=0?.5+I:.5-I}
+function erfS(z,tol){let t=z,s=z,n=0;for(;;){n++;t*=-z*z/n;const a=t/(2*n+1);s+=a;if(Math.abs(a)<tol||n>600)break}return{v:2/Math.sqrt(PI)*s,terms:n+1}}
+const cdfS=(x,tol)=>.5*(1+erfS(x/Math.SQRT2,tol).v);
+function cdfAS(x){const a=Math.abs(x),t=1/(1+.2316419*a),Q=phi(a)*t*(.31938153+t*(-.356563782+t*(1.781477937+t*(-1.821255978+t*1.330274429))));return x>=0?1-Q:Q}
+const NIST={'-3':.00135,'-2':.02275,'-1':.15866,'-0.5':.30854,'0':.5,'0.5':.69146,'1':.84134,'1.5':.93319,'2':.97725,'3':.99865},XS=Object.keys(NIST).map(Number).sort((a,b)=>a-b);
+const sn=()=>Math.max(2,2*Math.round((+$('#sn').value||200)/2)),stol=()=>+$('#stol').value;
+const ref=x=>$('#refsel').value==='nist'?NIST[x]:cdfS(x,1e-16);
+let TM=null;
+function setX(v){v=Math.max(-6,Math.min(6,+v||0));$('#gx').value=v;$('#gxv').textContent=v.toFixed(2);$('#cx').value=v;calc();drawG1()}
+function calc(){const x=+$('#cx').value||0,s=erfS(x/Math.SQRT2,stol()),r=cdfS(x,1e-16);
+ $('#o1').textContent=simpson(x,sn()).toFixed(8);$('#o2').textContent=(.5*(1+s.v)).toFixed(8);$('#o2t').textContent=s.terms+' terms';$('#o3').textContent=cdfAS(x).toFixed(8);
+ $('#oref').textContent='High-accuracy series reference: '+r.toFixed(10)+(Math.abs(x)>4.5?' — for large |x| the alternating series loses precision to cancellation.':'');}
+function drawG1(){const x=+$('#gx').value,P=mk($('#pdfc'),[-4,4],[0,.45],{xl:'x',yl:'φ(x)'}),c=P.c;c.fillStyle='rgba(185,155,221,.6)';c.beginPath();c.moveTo(P.X(-4),P.Y(0));for(let i=0;i<=200;i++){const t=-4+(Math.min(x,4)+4)*i/200;c.lineTo(P.X(t),P.Y(phi(t)))}c.lineTo(P.X(x),P.Y(0));c.fill();
+ c.strokeStyle='#49336B';c.lineWidth=2;c.beginPath();for(let i=0;i<=200;i++){const t=-4+8*i/200;i?c.lineTo(P.X(t),P.Y(phi(t))):c.moveTo(P.X(t),P.Y(phi(t)))}c.stroke();
+ const Q=mk($('#cdfc'),[-4,4],[0,1],{xl:'x',yl:'Φ(x)'}),d=Q.c;d.strokeStyle='#8062AD';d.lineWidth=2;d.beginPath();for(let i=0;i<=200;i++){const t=-4+8*i/200;i?d.lineTo(Q.X(t),Q.Y(cdfAS(t))):d.moveTo(Q.X(t),Q.Y(cdfAS(t)))}d.stroke();
+ d.fillStyle='#24183D';d.beginPath();d.arc(Q.X(x),Q.Y(cdfAS(x)),5,0,7);d.fill();d.textAlign='left';d.fillText('Φ('+x.toFixed(2)+') ≈ '+cdfAS(x).toFixed(5),Q.X(x)+8,Q.Y(cdfAS(x))+14)}
+function bench(){const fs=[x=>simpson(x,sn()),x=>cdfS(x,stol()),cdfAS];TM=fs.map(f=>{const pass=()=>{let s=0;for(const x of XS)s+=f(x);return s};let t=performance.now();pass();t=performance.now()-t;const r=Math.max(5,Math.min(20000,Math.floor(40/Math.max(t,1e-4)))),t0=performance.now();for(let i=0;i<r;i++)pass();return(performance.now()-t0)/(r*XS.length)*1000});drawG5();tables2()}
+function drawG5(){if(!TM)return;const lo=10**Math.floor(Math.log10(Math.min(...TM))-.3),hi=10**Math.ceil(Math.log10(Math.max(...TM))),P=mk($('#g5'),[0,3],[lo,hi],{ly:1,nox:1,yl:'µs'}),c=P.c,nm=['Simpson','Series','A&S'],col=['#49336B','#8062AD','#C07AD9'];
+ TM.forEach((t,i)=>{const x=P.X(i+.15),w=P.X(i+.85)-x;c.fillStyle=col[i];c.fillRect(x,P.Y(t),w,P.Y(lo)-P.Y(t));c.fillStyle='#24183D';c.textAlign='center';c.fillText(t.toFixed(3)+' µs',x+w/2,P.Y(t)-4);c.fillText(nm[i],x+w/2,P.h-8)})}
+function tables2(){const n=sn(),tl=stol(),fs=[x=>simpson(x,n),x=>cdfS(x,tl),cdfAS],nm=['Simpson (n='+n+')','erf series (tol '+tl+')','Abramowitz–Stegun'],V=fs.map(f=>XS.map(f));
+ $('#t2').innerHTML='<tr><th>x</th><th>Simpson</th><th>Series</th><th>A&amp;S</th><th>Reference</th></tr>'+XS.map((x,i)=>`<tr><td>${x}</td>${V.map(v=>`<td>${v[i].toFixed(7)}</td>`).join('')}<td>${ref(x).toFixed(7)}</td></tr>`).join('');
+ const st=V.map(v=>{const e=v.map((y,i)=>Math.abs(y-ref(XS[i])));return{m:e.reduce((a,b)=>a+b)/e.length,x:Math.max(...e)}}),terms=XS.map(x=>erfS(x/Math.SQRT2,tl).terms),rel=XS.map((x,i)=>Math.abs(V[2][i]-ref(x))/ref(x));
+ $('#t3').innerHTML='<tr><th>Method</th><th>Mean abs. error</th><th>Max abs. error</th><th>Time (µs / eval)</th><th>Cost</th></tr>'+nm.map((m,i)=>`<tr><td>${m}</td><td>${ex(st[i].m)}</td><td>${ex(st[i].x)}</td><td>${TM?TM[i].toFixed(3):'…'}</td><td>${['n+1 density evaluations','avg '+(terms.reduce((a,b)=>a+b)/terms.length).toFixed(1)+' terms','5-term polynomial + 1 exp'][i]}</td></tr>`).join('');
+ const bestI=st.map(s=>s.m).indexOf(Math.min(...st.map(s=>s.m))),fast=TM?TM.indexOf(Math.min(...TM)):2;
+ $('#disc2').innerHTML=`<ul><li>Simpson's rule gives an approximation whose accuracy depends on the number of subdivisions (n = ${n}); its mean error against the selected reference is ${ex(st[0].m)} and its cost grows linearly with n.</li><li>The power series converges progressively, but its efficiency depends on x and on the stopping tolerance (${tl}): it needed between ${Math.min(...terms)} and ${Math.max(...terms)} terms on the test points, and for large |x| it suffers cancellation.</li><li>The Abramowitz–Stegun approximation is very fast (${TM?TM[2].toFixed(3)+' µs per evaluation':'fast'}) with a small absolute error (mean ${ex(st[2].m)}, max ${ex(st[2].x)}), consistent with its classical bound of about 7.5·10<sup>−8</sup> when the reference is accurate.</li><li>Against the NIST table, which is rounded to 5 decimals, all three methods look equally good (the table limits the resolution to ≈5·10<sup>−6</sup>). Choose the high-accuracy reference to see their real differences.</li><li>Most accurate here: <b>${nm[bestI]}</b>; fastest: <b>${nm[fast]}</b>.</li><li>The identity Φ(x) = ½[1+erf(x/√2)] is exact; computing erf by a truncated series or an approximation is numerical. Special functions give an exact representation, but numerical algorithms are still needed to evaluate it in practice.</li></ul>`;
+ drawG4(V)}
+function drawG4(V){const fl=1e-17,E=V.map(v=>v.map((y,i)=>Math.max(Math.abs(y-ref(XS[i])),fl))),P=mk($('#g4'),[-3.3,3.3],[1e-17,1e-3],{ly:1,xl:'x',yl:'absolute error'}),c=P.c;
+ E.forEach((e,j)=>{c.strokeStyle=c.fillStyle=['#49336B','#8062AD','#C07AD9'][j];c.lineWidth=2;c.beginPath();e.forEach((y,i)=>{const px=P.X(XS[i]),py=P.Y(y);i?c.lineTo(px,py):c.moveTo(px,py)});c.stroke();e.forEach((y,i)=>{c.beginPath();c.arc(P.X(XS[i]),P.Y(y),3,0,7);c.fill()})})}
+function draw2(){if($('#v-ex2').classList.contains('hide'))return;drawG1();calc();if(!TM)bench();else{tables2();drawG5()}}
+$('#gx').oninput=e=>setX(e.target.value);$('#cx').oninput=e=>setX(e.target.value);
+['sn','stol','refsel'].forEach(i=>$('#'+i).onchange=()=>{calc();bench()});
+addEventListener('resize',()=>{draw1();draw2()});
+$('#fsel').onchange();const h=location.hash.slice(1);go(['ex1','ex2'].includes(h)?h:'home');
+</script></body></html>
