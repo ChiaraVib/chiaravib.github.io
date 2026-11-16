@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Statistics Lab · Homework 6</title>
+<style>
+:root{--dark:#24183D;--pri:#49336B;--acc:#8062AD;--lt:#B99BDD;--bg:#F7F5FA;--bd:#E8E2EF;--lav:#E9E1F7;--tx:#2f2745}
+*{box-sizing:border-box}body{margin:0;font:16px/1.6 system-ui,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx)}
+header{background:linear-gradient(135deg,var(--dark),var(--pri));color:#fff;padding:14px 5vw}header b{letter-spacing:.5px}
+main{max-width:1100px;margin:auto;padding:24px 16px 60px}
+h1{color:var(--dark);font-size:clamp(1.8rem,4vw,2.6rem);margin:.2em 0}h2{color:var(--dark);margin:1.8em 0 .3em}h3{color:var(--pri);margin:1em 0 .3em}
+.eyebrow{color:var(--acc);font-weight:700;letter-spacing:.12em;font-size:.8rem;text-transform:uppercase}
+.card{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:20px;margin:14px 0;box-shadow:0 2px 10px rgba(73,51,107,.05)}
+.cols{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr))}.cols>*{min-width:0}
+button{background:var(--pri);color:#fff;border:0;border-radius:10px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer}button:hover{background:var(--acc)}
+button.ghost{background:#fff;color:var(--pri);border:1px solid var(--lt)}button.ghost:hover{background:var(--lav)}
+input,select,textarea{font:inherit;padding:7px 10px;border:1px solid var(--lt);border-radius:8px;background:#fff;color:var(--tx);max-width:100%}
+textarea{width:100%;height:150px;font:13px/1.4 ui-monospace,Consolas,monospace}
+label{display:block;font-size:.85rem;color:var(--pri);font-weight:600;margin:10px 0 3px}
+canvas{width:100%;height:300px;display:block}
+table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{padding:7px 10px;border-bottom:1px solid var(--bd);text-align:right}th:first-child,td:first-child{text-align:left}th{background:var(--lav);color:var(--dark)}tr.tot td{font-weight:700;background:#faf8fd}
+.wrap{overflow-x:auto}.fm{font-family:Cambria,"Times New Roman",serif;font-size:1.05rem;background:var(--bg);border-left:4px solid var(--lt);padding:8px 14px;margin:8px 0;overflow-x:auto;word-break:break-word}
+.pill{display:inline-block;background:var(--lav);color:var(--pri);border-radius:99px;padding:2px 12px;font-size:.82rem;margin:2px 4px 2px 0}
+.big{font-size:2rem;font-weight:800;color:var(--pri)}.warn{color:#8a3b86;font-size:.9rem}.err{background:#fbeaf6;border:1px solid #e3b5d8;color:#7a2a6e;border-radius:10px;padding:10px 14px;margin:10px 0}
+.leg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin:0 4px 0 10px;vertical-align:-1px}sub,sup{line-height:0}ul{padding-left:20px}
+.stats{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));margin:10px 0}.stats>div{background:var(--bg);border-radius:12px;padding:10px 14px}
+.cell small{display:block;color:#6b5f85;font-size:.75rem}.hide{display:none}
+</style></head><body>
+<header><b>◆ STATISTICS LAB · Homework 6</b></header>
+<main>
+<div class="eyebrow">Bivariate categorical analysis</div>
+<h1>Statistical Independence Analyzer</h1>
+<p>Load any bivariate dataset (X, F), build the contingency table, compute marginal and conditional frequencies, the expected frequencies under independence, the Chi-square statistic and its p-value, and read an automatic interpretation of the result.</p>
+
+<h2><span class="eyebrow">01 · Theoretical Background</span><br>Independence in probability and in statistics</h2>
+<div class="cols">
+<div class="card"><h3>Probability</h3>
+<p>Two events A and B are <b>independent</b> when the occurrence of one does not change the probability of the other:</p>
+<div class="fm">P(A ∩ B) = P(A)·P(B) &nbsp;&nbsp; ⇔ &nbsp;&nbsp; P(A | B) = P(A) &nbsp; (if P(B) &gt; 0)</div>
+<p>Two discrete random variables X and F are independent when this holds for every pair of values:</p>
+<div class="fm">P(X = x<sub>i</sub>, F = f<sub>j</sub>) = P(X = x<sub>i</sub>)·P(F = f<sub>j</sub>) for all i, j</div>
+<p>Equivalently, the conditional distribution of F given X = x<sub>i</sub> is the same for every x<sub>i</sub>. Independence is a property of the <i>joint distribution</i> of the population.</p></div>
+<div class="card"><h3>Statistics</h3>
+<p>We only observe a <b>sample</b> of N pairs. Even for truly independent variables, the sample joint frequencies never match the product of the marginals exactly, because of sampling variability. So we <i>test</i> a hypothesis:</p>
+<div class="fm">H<sub>0</sub>: X and F are independent &nbsp;&nbsp; vs &nbsp;&nbsp; H<sub>1</sub>: X and F are associated</div>
+<p>Under H<sub>0</sub>, the expected count of cell (i, j) is E<sub>ij</sub> = R<sub>i</sub>·C<sub>j</sub>/N (row total × column total / sample size). The Pearson statistic measures the distance between observed (O) and expected counts:</p>
+<div class="fm">χ² = Σ<sub>i</sub> Σ<sub>j</sub> (O<sub>ij</sub> − E<sub>ij</sub>)² / E<sub>ij</sub> &nbsp;&nbsp; df = (r − 1)(c − 1)</div>
+<p>For large enough expected counts, χ² follows approximately a Chi-square distribution with df degrees of freedom under H<sub>0</sub>. The <b>p-value</b> is p = P(χ²<sub>df</sub> ≥ χ²<sub>obs</sub>): if p &lt; α (usually 0.05) we reject H<sub>0</sub>. Not rejecting H<sub>0</sub> does <b>not</b> prove independence: it only means the data give insufficient evidence of association.</p></div></div>
+<div class="card"><h3>Conditions and association vs. causation</h3>
+<ul><li>Observations must be independent of each other and categories mutually exclusive.</li><li>Rule of thumb: expected counts should be at least 5. Otherwise the Chi-square approximation is unreliable (for 2×2 tables Fisher's exact test is an alternative).</li><li>Chi-square tests whether there is evidence of association, not how strong it is: <b>Cramér's V</b> = √(χ² / (N·min(r−1, c−1))) ∈ [0, 1] gives an effect size.</li><li>A statistical association does <b>not</b> imply causation: confounding variables, reverse causality or selection effects can produce the same pattern.</li></ul></div>
+
+<h2><span class="eyebrow">02 · Dataset Input</span><br>Choose or load a bivariate dataset</h2>
+<div class="card">
+<div class="cols"><div><label>Example dataset</label><select id="ex"></select>
+<label>Or upload a CSV file</label><input type="file" id="file" accept=".csv,.txt,.tsv"></div>
+<div><label>Or paste / edit data (CSV with a header row; missing values: empty, NA, ?)</label><textarea id="raw" spellcheck="false"></textarea></div></div>
+<p><button onclick="loadRaw()">Load dataset</button></p><div id="msg"></div>
+<div class="cols"><div><label>Variable X (rows)</label><select id="vx"></select><div id="bx" class="hide"><label>Number of classes for X (numeric variable)</label><input id="nbx" type="number" min="2" max="12" value="4"></div></div>
+<div><label>Variable F (columns)</label><select id="vf"></select><div id="bf" class="hide"><label>Number of classes for F (numeric variable)</label><input id="nbf" type="number" min="2" max="12" value="4"></div></div></div>
+<div id="prev" class="wrap" style="margin-top:10px"></div></div>
+<div id="out" class="hide">
+
+<h2><span class="eyebrow">03 · Contingency Table</span><br>Observed frequencies</h2>
+<div class="card"><label>Display</label><select id="rel"><option value="n">Counts<option value="t">Relative to grand total (joint frequency)</select>
+<div class="wrap" id="tobs" style="margin-top:10px"></div><p class="warn" id="nfo"></p></div>
+
+<h2><span class="eyebrow">04 · Marginal &amp; Conditional Frequencies</span><br>One variable at a time, and one given the other</h2>
+<div class="cols"><div class="card"><h3>Marginal frequencies of X</h3><div class="wrap" id="mx"></div></div><div class="card"><h3>Marginal frequencies of F</h3><div class="wrap" id="mf"></div></div></div>
+<div class="card"><label>Conditional distribution</label><select id="cond"><option value="r">Given the row: P(F | X) – each row sums to 100%<option value="c">Given the column: P(X | F) – each column sums to 100%</select>
+<div class="wrap" id="tcond" style="margin-top:10px"></div>
+<h3>Graph 1 – Conditional distributions</h3><div class="leg" id="leg1"></div><canvas id="g1"></canvas>
+<p class="warn">If the bars have the same composition, the variables look independent; different compositions suggest association.</p></div>
+
+<h2><span class="eyebrow">05 · Independence Test</span><br>Expected frequencies and Chi-square</h2>
+<div class="cols"><div class="card"><h3>Expected frequencies under independence</h3><div class="wrap" id="texp"></div><div class="fm" id="step"></div></div>
+<div class="card"><h3>Observed vs expected, per cell</h3><div class="wrap" id="tcmp"></div><p class="warn">Shading shows the standardized residual (O − E)/√E: darker purple = more observations than expected, pink-lilac = fewer.</p></div></div>
+<div class="card"><label>Significance level α</label><input id="alpha" type="number" value="0.05" min="0.001" max="0.5" step="0.01">
+<div class="stats" id="stats"></div>
+<h3>Graph 2 – Chi-square distribution under H<sub>0</sub></h3><canvas id="g2"></canvas></div>
+
+<h2><span class="eyebrow">06 · Results &amp; Interpretation</span><br>What do the data say?</h2>
+<div class="card" id="interp"></div>
+<div class="card"><h3>Conclusion</h3><p>The Chi-square test compares what we observe with what independence would predict. A small p-value says the sample is hard to reconcile with independence; a large one says the sample is compatible with it, which is weaker than proving it. In both cases the result describes a <b>statistical association</b> between X and F in this sample. It says nothing about which variable influences the other, or whether a third factor drives both: establishing causality requires experimental design or additional assumptions, not a contingency table.</p></div>
+</div></main>
+
+<script>
+const $=s=>document.querySelector(s);
+/*CORE*/
+const MISS=new Set(['','na','n/a','nan','null','none','?','-']),isMiss=v=>MISS.has(String(v).trim().toLowerCase());
+const sum=a=>a.reduce((s,v)=>s+v,0);
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function parseDataset(t){t=t.replace(/\r/g,'').trim();const L=t.split('\n').filter(l=>l.trim()!=='');if(L.length<3)throw new Error('The dataset needs a header row and at least 2 data rows.');
+ const d=[',',';','\t'].map(c=>[c,L[0].split(c).length]).sort((a,b)=>b[1]-a[1])[0][0];
+ const sp=l=>{const o=[];let c='',q=false;for(const ch of l){if(ch==='"')q=!q;else if(ch===d&&!q){o.push(c.trim());c=''}else c+=ch}o.push(c.trim());return o};
+ const head=sp(L[0]);if(head.length<2)throw new Error('At least two columns are required.');return{head,rows:L.slice(1).map(sp)}}
+function lgamma(z){const c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+ if(z<.5)return Math.log(Math.PI/Math.sin(Math.PI*z))-lgamma(1-z);z-=1;let x=c[0];for(let i=1;i<9;i++)x+=c[i]/(z+i);const t=z+7.5;return .5*Math.log(2*Math.PI)+(z+.5)*Math.log(t)-t+Math.log(x)}
+function gammaQ(a,x){if(x<=0)return 1;const pre=Math.exp(-x+a*Math.log(x)-lgamma(a));
+ if(x<a+1){let s=1/a,t=s,n=a;for(let i=0;i<1000;i++){n++;t*=x/n;s+=t;if(Math.abs(t)<Math.abs(s)*1e-16)break}return Math.max(0,1-s*pre)}
+ let b=x+1-a,c=1e300,d=1/b,h=d;for(let i=1;i<1000;i++){const an=-i*(i-a);b+=2;d=an*d+b;if(Math.abs(d)<1e-300)d=1e-300;c=b+an/c;if(Math.abs(c)<1e-300)c=1e-300;d=1/d;const dl=d*c;h*=dl;if(Math.abs(dl-1)<1e-15)break}return pre*h}
+const calculatePValue=(chi,df)=>gammaQ(df/2,chi/2);
+const critValue=(df,al)=>{let lo=0,hi=1;while(calculatePValue(hi,df)>al)hi*=2;for(let i=0;i<80;i++){const m=(lo+hi)/2;calculatePValue(m,df)>al?lo=m:hi=m}return(lo+hi)/2};
+const cats=(a,order)=>order||[...new Set(a)].sort((x,y)=>String(x).localeCompare(String(y),undefined,{numeric:true}));
+function buildContingencyTable(xs,fs,ox,of){const rows=cats(xs,ox),cols=cats(fs,of),ri=new Map(rows.map((v,i)=>[v,i])),ci=new Map(cols.map((v,i)=>[v,i])),O=rows.map(()=>cols.map(()=>0));
+ xs.forEach((x,k)=>O[ri.get(x)][ci.get(fs[k])]++);const R=O.map(sum),C=cols.map((_,j)=>sum(O.map(r=>r[j])));return{rows,cols,O,R,C,N:sum(R)}}
+const calculateMarginalFrequencies=T=>({x:T.R.map(v=>[v,v/T.N]),f:T.C.map(v=>[v,v/T.N])});
+const calculateConditionalFrequencies=(T,m)=>T.O.map((r,i)=>r.map((v,j)=>m==='r'?(T.R[i]?v/T.R[i]:0):(T.C[j]?v/T.C[j]:0)));
+const calculateExpectedFrequencies=T=>T.R.map(r=>T.C.map(c=>r*c/T.N));
+function calculateChiSquare(T,E){let chi=0;const K=T.O.map((r,i)=>r.map((o,j)=>{const k=E[i][j]>0?(o-E[i][j])**2/E[i][j]:0;chi+=k;return k}));
+ const df=(T.rows.length-1)*(T.cols.length-1);return{chi,df,K,p:calculatePValue(chi,df),V:Math.sqrt(chi/(T.N*Math.min(T.rows.length-1,T.cols.length-1)))}}
+function fisher2x2(O){const[[a,b],[c,d]]=O,lf=n=>lgamma(n+1),R1=a+b,R2=c+d,C1=a+c,N=R1+R2,lp=x=>lf(R1)+lf(R2)+lf(C1)+lf(N-C1)-lf(N)-lf(x)-lf(R1-x)-lf(C1-x)-lf(R2-C1+x);
+ const p0=lp(a);let p=0;for(let x=Math.max(0,C1-R2);x<=Math.min(R1,C1);x++){const q=lp(x);if(q<=p0+1e-9)p+=Math.exp(q)}return Math.min(1,p)}
+const gen=(h,rows)=>h+'\n'+rows.map(r=>r.join(',')).join('\n');
+function fromMatrix(h,rn,cn,M){const o=[];M.forEach((r,i)=>r.forEach((n,j)=>{for(let k=0;k<n;k++)o.push([rn[i],cn[j]])}));return gen(h,o)}
+const EX={
+ 'Study method vs exam result (2×2, 100 students)':()=>fromMatrix('StudyMethod,ExamResult',['Individual','Group'],['Yes','No'],[[30,20],[40,10]]),
+ 'Age group vs drink preference (3×3, synthetic)':()=>fromMatrix('AgeGroup,DrinkPreference',['18-25','26-40','41+'],['Coffee','Tea','Soft drink'],[[40,15,45],[50,30,20],[25,55,20]]),
+ 'Two independent variables (seeded random, N = 300)':()=>{const r=mulberry(7),pick=(v,p)=>{const u=r();let s=0;for(let i=0;i<v.length;i++){s+=p[i];if(u<s)return v[i]}return v[v.length-1]};const o=[];for(let i=0;i<300;i++)o.push([pick(['A','B','C'],[.3,.5,.2]),pick(['Yes','No'],[.4,.6])]);return gen('Group,Response',o)},
+ 'Age vs weekly study hours (numeric, needs classes)':()=>{const r=mulberry(11),o=[];for(let i=0;i<200;i++){const a=18+Math.floor(r()*43),h=Math.max(0,Math.round(24-.25*a+(r()-.5)*16));o.push([a,h])}o.push(['','12']);return gen('Age,WeeklyStudyHours',o)}};
+/*ENDCORE*/
+
+/* ---------- state & loading ---------- */
+let D=null;const PAL=['#49336B','#8062AD','#B99BDD','#C07AD9','#E0C8F2','#6a4c93','#9d7fd0','#d9b8ea'];
+const f2=v=>(+v).toFixed(2),f4=v=>(+v).toFixed(4),pf=p=>p<1e-4?p.toExponential(2):p.toFixed(4),pc=v=>(v*100).toFixed(1)+'%';
+const nf=v=>Number.isInteger(v)?''+v:(+v.toPrecision(4))+'';
+for(const k in EX)$('#ex').add(new Option(k,k));
+$('#ex').onchange=()=>{$('#raw').value=EX[$('#ex').value]();loadRaw()};
+$('#file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$('#raw').value=r.result;loadRaw()};r.readAsText(f)};
+function msg(t){$('#msg').innerHTML=t?`<div class="err">${t}</div>`:''}
+function loadRaw(){try{D=parseDataset($('#raw').value)}catch(e){D=null;msg(e.message);$('#out').classList.add('hide');return}
+ msg('');for(const id of['vx','vf']){const s=$('#'+id);s.innerHTML='';D.head.forEach((h,i)=>s.add(new Option(h,i)))}$('#vx').value=0;$('#vf').value=1;run()}
+const col=j=>D.rows.map(r=>r[j]===undefined?'':r[j]);
+const numeric=j=>{const v=col(j).filter(x=>!isMiss(x));return v.length>0&&v.every(x=>isFinite(+x))&&new Set(v).size>12};
+function categorize(j,nb){const v=col(j);if(!numeric(j))return{v:v.map(x=>isMiss(x)?null:String(x).trim()),order:null,binned:false};
+ const nums=v.filter(x=>!isMiss(x)).map(Number),lo=Math.min(...nums),hi=Math.max(...nums),w=(hi-lo)/nb||1,lab=i=>nf(lo+i*w)+'–'+nf(lo+(i+1)*w);
+ return{v:v.map(x=>isMiss(x)?null:lab(Math.min(nb-1,Math.floor((+x-lo)/w)))),order:Array.from({length:nb},(_,i)=>lab(i)),binned:true}}
+/* ---------- analysis pipeline ---------- */
+function run(){if(!D)return;const jx=+$('#vx').value,jf=+$('#vf').value;$('#bx').classList.toggle('hide',!numeric(jx));$('#bf').classList.toggle('hide',!numeric(jf));
+ $('#prev').innerHTML='<b>Preview</b> (first 6 of '+D.rows.length+' rows)'+tbl(D.head,D.rows.slice(0,6).map(r=>D.head.map((_,i)=>r[i]??'')));
+ const out=$('#out');if(jx===jf){msg('Choose two different variables.');out.classList.add('hide');return}
+ const X=categorize(jx,+$('#nbx').value||4),F=categorize(jf,+$('#nbf').value||4),xs=[],fs=[];let drop=0;
+ X.v.forEach((x,k)=>{if(x===null||F.v[k]===null)drop++;else{xs.push(x);fs.push(F.v[k])}});
+ const nx=new Set(xs).size,nF=new Set(fs).size;
+ if(xs.length<2||nx<2||nF<2){msg('Each variable needs at least 2 distinct categories among the complete observations.');out.classList.add('hide');return}
+ if(nx>30||nF>30){msg('A variable has more than 30 distinct categories: it is not suitable for a contingency table. Choose another column or group its values first.');out.classList.add('hide');return}
+ msg('');out.classList.remove('hide');
+ const ox=X.order&&X.order.filter(l=>xs.includes(l)),of=F.order&&F.order.filter(l=>fs.includes(l));
+ const T=buildContingencyTable(xs,fs,ox,of);A={T,E:calculateExpectedFrequencies(T),jx,jf,drop,binned:[X.binned,F.binned]};A.S=calculateChiSquare(T,A.E);renderResults()}
+let A=null;
+function tbl(h,rows,tot){return'<table><tr>'+h.map(x=>`<th>${x}</th>`).join('')+'</tr>'+rows.map((r,i)=>`<tr${tot&&i===rows.length-1?' class="tot"':''}>`+r.map(x=>`<td>${x}</td>`).join('')+'</tr>').join('')+'</table>'}
+/* ---------- rendering ---------- */
+function renderResults(){if(!A)return;const{T,E,S}=A,H=D.head,xn=H[A.jx],fn=H[A.jf];
+ const rel=$('#rel').value==='t',show=v=>rel?f4(v/T.N):v;
+ $('#tobs').innerHTML=tbl([`${xn} \\ ${fn}`,...T.cols,'Total'],[...T.O.map((r,i)=>[T.rows[i],...r.map(show),show(T.R[i])]),['Total',...T.C.map(show),show(T.N)]],1);
+ $('#nfo').textContent=`N = ${T.N} complete observations, ${T.rows.length}×${T.cols.length} table.`+(A.drop?` ${A.drop} row(s) with missing values were excluded.`:'');
+ const M=calculateMarginalFrequencies(T);$('#mx').innerHTML=tbl([xn,'Count','Relative'],[...M.x.map(([v,p],i)=>[v,T.R[i],pc(p)]),['Total',T.N,'100.0%']],1);$('#mf').innerHTML=tbl([fn,'Count','Relative'],[...M.f.map(([v,p],i)=>[v,T.C[i],pc(p)]),['Total',T.N,'100.0%']],1);
+ const cm=$('#cond').value,CF=calculateConditionalFrequencies(T,cm);
+ $('#tcond').innerHTML=cm==='r'?tbl([`P(${fn} | ${xn})`,...T.cols,'Total'],T.O.map((r,i)=>[T.rows[i],...CF[i].map(pc),'100.0%'])):tbl([`P(${xn} | ${fn})`,...T.cols],[...T.O.map((r,i)=>[T.rows[i],...CF[i].map(pc)]),['Total',...T.cols.map(()=>'100.0%')]],1);
+ $('#texp').innerHTML=tbl([`${xn} \\ ${fn}`,...T.cols,'Total'],[...E.map((r,i)=>[T.rows[i],...r.map(f2),T.R[i]]),['Total',...T.C,T.N]],1);
+ $('#step').innerHTML=`E<sub>11</sub> = R<sub>1</sub>·C<sub>1</sub> / N = ${T.R[0]}·${T.C[0]} / ${T.N} = ${f2(E[0][0])}<br>contribution of cell (1,1) = (${T.O[0][0]} − ${f2(E[0][0])})² / ${f2(E[0][0])} = ${f4(S.K[0][0])}`;
+ $('#tcmp').innerHTML=tbl([`${xn} \\ ${fn}`,...T.cols],T.O.map((r,i)=>[T.rows[i],...r.map((o,j)=>{const z=E[i][j]>0?(o-E[i][j])/Math.sqrt(E[i][j]):0,al=Math.min(.55,Math.abs(z)/5);
+  return`<div class="cell" style="background:${z>=0?`rgba(73,51,107,${al})`:`rgba(192,122,217,${al})`};padding:4px 6px;border-radius:6px"><b>O = ${o}</b><small>E = ${f2(E[i][j])}</small><small>χ² part = ${f4(S.K[i][j])}</small></div>`})]));
+ stats();legend();draw();}
+function stats(){const{T,S}=A,al=+$('#alpha').value||.05,cv=critValue(S.df,al);
+ $('#stats').innerHTML=[['χ²',f4(S.chi)],['Degrees of freedom',S.df],['p-value',pf(S.p)],['Critical value',f4(cv)],["Cramér's V",f4(S.V)]].map(([k,v])=>`<div><small>${k}</small><div class="big" style="font-size:1.4rem">${v}</div></div>`).join('');interp(al,cv)}
+function interp(al,cv){const{T,E,S}=A,H=D.head,xn=H[A.jx],fn=H[A.jf],rej=S.p<al,li=[];
+ li.push(`Test result: χ² = ${f4(S.chi)} with df = ${S.df}, p = ${pf(S.p)} (α = ${al}); the critical value is ${f4(cv)}.`);
+ li.push(rej?`<b>The null hypothesis of independence is rejected.</b> The data provide statistically significant evidence of an association between <i>${xn}</i> and <i>${fn}</i>: they are statistically <b>dependent</b> at the ${(al*100).toFixed(0)}% level.`:`<b>The null hypothesis of independence cannot be rejected.</b> The data do not provide sufficient evidence of an association between <i>${xn}</i> and <i>${fn}</i>. This does not prove that they are independent.`);
+ const v=S.V,lab=v<.1?'negligible':v<.3?'weak':v<.5?'moderate':'strong';li.push(`Cramér's V = ${f4(v)}: ${lab} association (rough guide for df = 1; thresholds depend on table size).`);
+ let bi=0,bj=0;S.K.forEach((r,i)=>r.forEach((k,j)=>{if(k>S.K[bi][bj]){bi=i;bj=j}}));
+ if(S.chi>0)li.push(`The largest contribution to χ² (${pc(S.K[bi][bj]/S.chi)} of the total) comes from <i>${T.rows[bi]}</i> × <i>${T.cols[bj]}</i>: ${T.O[bi][bj]} observed against ${f2(E[bi][bj])} expected (${T.O[bi][bj]>E[bi][bj]?'more':'fewer'} than under independence).`);
+ const small=E.flat().filter(e=>e<5).length;
+ if(small)li.push(`<span class="warn">⚠ ${small} of ${E.flat().length} expected counts are below 5 (${pc(small/E.flat().length)}): the Chi-square approximation may be unreliable. Consider more data, merging categories only if meaningful, or Fisher's exact test for 2×2 tables.</span>`);
+ if(T.rows.length===2&&T.cols.length===2){const pf2=fisher2x2(T.O);li.push(`Fisher's exact test for this 2×2 table: p = ${pf(pf2)}${small?' (recommended here because of the small expected counts)':' (for comparison)'}.`)}
+ if(T.N<20)li.push('<span class="warn">⚠ Very small sample (N &lt; 20): any conclusion is fragile.</span>');
+ if(A.drop)li.push(`${A.drop} observation(s) with missing values were excluded from the analysis.`);
+ if(A.binned.some(b=>b))li.push('<span class="warn">A numeric variable was grouped into equal-width classes. The result can depend on the number of classes chosen.</span>');
+ li.push('<i>Statistical association does not necessarily imply causation.</i> Hidden factors (e.g. prior preparation, age, motivation) may explain the pattern.');
+ $('#interp').innerHTML='<ul>'+li.map(t=>'<li>'+t+'</li>').join('')+'</ul>'}
+function legend(){$('#leg1').innerHTML=(($('#cond').value==='r')?A.T.cols:A.T.rows).map((c,i)=>`<i style="background:${PAL[i%8]}"></i>${c}`).join('')}
+function mk(cv,xr,yr){const d=devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;cv.width=w*d;cv.height=h*d;const c=cv.getContext('2d');c.scale(d,d);const L=50,R=12,T=12,B=36;
+ const X=x=>L+(x-xr[0])/(xr[1]-xr[0])*(w-L-R),Y=y=>h-B-(y-yr[0])/(yr[1]-yr[0])*(h-T-B);c.font='11px system-ui';c.strokeStyle='#E8E2EF';c.fillStyle='#6b5f85';
+ for(let i=0;i<=5;i++){const y=yr[0]+(yr[1]-yr[0])*i/5;c.beginPath();c.moveTo(L,Y(y));c.lineTo(w-R,Y(y));c.stroke();c.textAlign='right';c.fillText(+y.toPrecision(2)+'',L-5,Y(y)+4)}
+ c.strokeStyle='#8062AD';c.beginPath();c.moveTo(L,T);c.lineTo(L,h-B);c.lineTo(w-R,h-B);c.stroke();return{c,X,Y,w,h,L,R,T,B}}
+function draw(){if(!A)return;const{T,S}=A,cm=$('#cond').value,CF=calculateConditionalFrequencies(T,cm),outer=cm==='r'?T.rows:T.cols,inner=cm==='r'?T.cols:T.rows;
+ const P=mk($('#g1'),[0,outer.length],[0,100]),c=P.c;
+ outer.forEach((o,i)=>{let acc=0;const x0=P.X(i+.15),w=P.X(i+.85)-x0;inner.forEach((_,j)=>{const p=(cm==='r'?CF[i][j]:CF[j][i])*100;c.fillStyle=PAL[j%8];c.fillRect(x0,P.Y(acc+p),w,P.Y(acc)-P.Y(acc+p));if(p>7){c.fillStyle=j%8===2||j%8===4||j%8===7?'#24183D':'#fff';c.textAlign='center';c.fillText(p.toFixed(0)+'%',x0+w/2,P.Y(acc+p/2)+4)}acc+=p});
+  c.fillStyle='#24183D';c.textAlign='center';c.fillText(String(o).slice(0,16),x0+w/2,P.h-P.B+16)});
+ const df=S.df,pdf=x=>x<=0?0:Math.exp((df/2-1)*Math.log(x)-x/2-(df/2)*Math.log(2)-lgamma(df/2)),al=+$('#alpha').value||.05,cv=critValue(df,al),xm=Math.max(S.chi*1.25,cv*1.5,df+5*Math.sqrt(2*df)),x0=df===1?.15:0;
+ let ym=0;for(let i=1;i<=300;i++)ym=Math.max(ym,pdf(Math.max(x0,xm*i/300)));ym*=1.1;const Q=mk($('#g2'),[0,xm],[0,ym]),d=Q.c,y=x=>Q.Y(Math.min(ym,pdf(Math.max(x,x0))));
+ d.fillStyle='rgba(192,122,217,.45)';d.beginPath();d.moveTo(Q.X(cv),Q.Y(0));for(let i=0;i<=150;i++){const x=cv+(xm-cv)*i/150;d.lineTo(Q.X(x),y(x))}d.lineTo(Q.X(xm),Q.Y(0));d.fill();
+ d.strokeStyle='#49336B';d.lineWidth=2;d.beginPath();for(let i=0;i<=300;i++){const x=xm*i/300;i?d.lineTo(Q.X(x),y(x)):d.moveTo(Q.X(x),y(x))}d.stroke();
+ d.setLineDash([5,4]);d.strokeStyle='#24183D';d.beginPath();d.moveTo(Q.X(S.chi),Q.Y(0));d.lineTo(Q.X(S.chi),Q.T);d.stroke();d.setLineDash([]);d.fillStyle='#24183D';d.textAlign=S.chi>xm*.7?'right':'left';d.fillText('observed χ² = '+f2(S.chi),Q.X(S.chi)+(S.chi>xm*.7?-6:6),Q.T+12);
+ d.fillStyle='#8a3b86';d.textAlign='left';d.fillText('rejection region (α = '+al+')',Math.min(Q.X(cv)+6,Q.w-150),Q.Y(0)-8);d.fillStyle='#6b5f85';d.textAlign='center';for(let i=0;i<=5;i++)d.fillText((xm*i/5).toFixed(1),Q.X(xm*i/5),Q.h-Q.B+14)}
+['rel','cond'].forEach(i=>$('#'+i).onchange=renderResults);$('#alpha').oninput=()=>{if(A)stats(),draw()};
+['vx','vf','nbx','nbf'].forEach(i=>$('#'+i).onchange=run);addEventListener('resize',draw);
+$('#ex').onchange();
+</script></body></html>
