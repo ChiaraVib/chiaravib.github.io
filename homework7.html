@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Homework 7 · Probability Theory & Bayesian Inference</title>
+<script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]}};</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--dm:#73547F;--m:#9A7AA5;--l:#C7B2D0;--ll:#E9E0ED;--bg:#F7F3F8;--t:#39323D}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--t)}
+header{background:linear-gradient(135deg,var(--dm),var(--m));color:#fff;padding:48px 20px 36px;text-align:center}
+header small{letter-spacing:.15em;opacity:.85}header h1{margin:8px 0;font-size:2.6rem}header p{margin:4px 0;opacity:.9}
+nav{position:sticky;top:0;background:#fff;border-bottom:2px solid var(--l);display:flex;gap:6px;justify-content:center;flex-wrap:wrap;padding:8px;z-index:5}
+nav a{color:var(--dm);text-decoration:none;padding:6px 14px;border-radius:20px;font-weight:600;font-size:.9rem}nav a:hover{background:var(--ll)}
+main{max-width:920px;margin:auto;padding:20px}
+section{background:#fff;border-radius:14px;padding:24px 26px;margin:24px 0;box-shadow:0 2px 10px #73547f22}
+h2{color:var(--dm);margin-top:0;border-bottom:3px solid var(--l);padding-bottom:6px}h3{color:var(--m);margin-bottom:6px}
+.box{background:var(--ll);border-left:5px solid var(--m);border-radius:8px;padding:10px 16px;margin:14px 0}
+.box b.k{color:var(--dm)}.warn{background:#fbeef0;border-left-color:#b5586a}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:.93rem}th{background:var(--l);color:var(--dm);text-align:left}
+th,td{padding:8px 10px;border:1px solid var(--ll)}tr:nth-child(even) td{background:var(--bg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g2 .card{overflow-x:auto}
+@media(max-width:600px){.g2{grid-template-columns:1fr}}
+.card{border:1px solid var(--l);border-radius:10px;padding:4px 16px 8px;background:#fdfbfe}
+.tool{background:var(--bg);border:2px dashed var(--m);border-radius:12px;padding:14px 16px;margin:16px 0}
+.tool h3{margin-top:0}.ctl{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:8px 0}
+.ctl label{font-size:.88rem;display:flex;flex-direction:column;gap:2px;min-width:140px}
+input,select{font:inherit;padding:5px;border:1px solid var(--l);border-radius:6px;accent-color:var(--dm)}
+button{background:var(--dm);color:#fff;border:0;border-radius:8px;padding:8px 16px;font:inherit;cursor:pointer}button:hover{background:var(--m)}
+.cv{position:relative;height:260px}.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.res div{background:#fff;border:1px solid var(--l);border-radius:8px;padding:6px 10px;font-size:.85rem}.res b{display:block;font-size:1.2rem;color:var(--dm)}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin:14px 0}
+.flow span{background:var(--l);color:var(--dm);font-weight:700;padding:8px 14px;border-radius:8px}.flow i{font-style:normal;color:var(--m);font-weight:700}
+.bar{display:flex;height:26px;border-radius:6px;overflow:hidden;margin:8px 0;font-size:.75rem;color:#fff}.bar div{display:flex;align-items:center;justify-content:center;overflow:hidden}
+#btnTop{display:block;margin:30px auto}footer{text-align:center;padding:20px;color:var(--m);font-size:.85rem}
+@media(max-width:600px){header h1{font-size:2rem}section{padding:16px}}
+</style></head><body>
+<header><small>UNIVERSITÀ LA SAPIENZA · CYBERSECURITY</small><h1>Homework 7</h1><p>Probability Theory &amp; Bayesian Inference</p><p>Statistics · Theory, Applications &amp; Interactive Examples</p></header>
+<nav><a href="#s1">01 · Modes of Convergence</a><a href="#s2">02 · Conditional Probability &amp; Bayes</a></nav>
+<main>
+<section id="s1"><h2>Section 01 · Modes of Convergence in Probability Theory</h2>
+<h3>1.1 Introduction</h3>
+<p>A sequence of random variables \(X_n\) is a sequence of <em>functions</em> on a sample space \(\Omega\), so "\(X_n\to X\)" can be made precise in several ways: we may ask that individual outcomes converge, that errors be small with high probability, that the average squared error vanish, or only that the <em>distributions</em> become alike. These notions are not equivalent: some are stronger than others, and each is the right tool for a different theorem.</p>
+<h3>1.2 The four main modes</h3>
+<div class="grid g2">
+<div class="card"><h3>Convergence in probability</h3>\[X_n\xrightarrow{P}X\]\[\lim_{n\to\infty}P(|X_n-X|>\varepsilon)=0\quad\forall\varepsilon>0\]<p><b>Idea:</b> large errors become unlikely. <b>Example:</b> \(X_n=1\) with prob. \(1/n\), else 0 → 0.</p></div>
+<div class="card"><h3>Almost sure convergence</h3>\[X_n\xrightarrow{a.s.}X\]\[P\left(\lim_{n\to\infty}X_n=X\right)=1\]<p><b>Idea:</b> for almost every outcome \(\omega\), the numeric sequence \(X_n(\omega)\) converges. It controls the whole trajectory, not each \(n\) separately.</p></div>
+<div class="card"><h3>Mean-square convergence (L²)</h3>\[X_n\xrightarrow{L^2}X\]\[\lim_{n\to\infty}E\big[(X_n-X)^2\big]=0\]<p><b>Idea:</b> the mean squared error vanishes. <b>Example:</b> \(\overline X_n\to\mu\) in \(L^2\), since \(E[(\overline X_n-\mu)^2]=\sigma^2/n\).</p></div>
+<div class="card"><h3>Convergence in distribution</h3>\[X_n\xrightarrow{d}X\]\[F_{X_n}(x)\to F_X(x)\]<p>At every continuity point \(x\) of \(F_X\). <b>Idea:</b> only the laws matter, not the variables themselves. <b>Example:</b> the CLT.</p></div>
+</div>
+<h3>1.3 Relationships between the modes</h3>
+<div class="flow"><span>a.s.</span><i>⇒</i><span>in probability</span><i>⇒</i><span>in distribution</span></div>
+<div class="flow"><span>mean-square (L²)</span><i>⇒</i><span>in probability</span></div>
+<div class="box">Arrows are implications, not equivalences. Counterexamples: <b>P ⇏ a.s.</b> (the "typewriter" sequence of shrinking intervals sweeping over [0,1]); <b>P ⇏ L²</b> (\(X_n=n\) w.p. \(1/n\), else 0 converges to 0 in probability but \(E[X_n^2]=n\to\infty\)); <b>a.s. and L² are not comparable</b> in general.</div>
+<p>Convergence in distribution is the weakest notion: it does not even require \(X_n\) and \(X\) to live on the same probability space, so it does not in general imply convergence in probability. (Special case: if \(X_n\xrightarrow{d}c\) with \(c\) constant, then \(X_n\xrightarrow{P}c\).)</p>
+<h3>1.4 Role in the LLN and CLT</h3>
+<p>Let \(X_i\) be i.i.d. with mean \(\mu\) and variance \(\sigma^2\), and \(\overline X_n=\frac1n\sum_{i=1}^nX_i\).</p>
+<div class="grid"><div class="card"><h3>Law of Large Numbers</h3><ul><li><b>Weak LLN:</b> \(\overline X_n\xrightarrow{P}\mu\).</li><li><b>Strong LLN:</b> \(\overline X_n\xrightarrow{a.s.}\mu\).</li><li>With finite variance also \(\overline X_n\xrightarrow{L^2}\mu\).</li></ul><p>Meaning: with more data, the sample mean approaches the expected value.</p></div>
+<div class="card"><h3>Central Limit Theorem</h3>\[\frac{\sqrt n(\overline X_n-\mu)}{\sigma}\xrightarrow{d}N(0,1)\]<p>Classical hypotheses: i.i.d., finite mean, finite and positive variance. It describes the <em>shape of the fluctuations</em> that the LLN ignores, and justifies confidence intervals and hypothesis tests.</p></div></div>
+<h3>1.5 Why does √n appear?</h3>
+<div class="box"><b class="k">The √n question</b><ol>
+<li>For independent variables the variances add: \[\operatorname{Var}\Big(\sum_{i=1}^nX_i\Big)=n\sigma^2\]</li>
+<li>Dividing by \(n\) divides the variance by \(n^2\): \[\operatorname{Var}(\overline X_n)=\frac{\sigma^2}{n}\]</li>
+<li>So the standard deviation (standard error) shrinks like \(1/\sqrt n\): \[SE(\overline X_n)=\frac{\sigma}{\sqrt n}\]</li>
+<li>The error \(\overline X_n-\mu\) tends to 0 (LLN), so its limit is degenerate. Multiplying by \(\sqrt n\) is exactly the scaling that keeps variance equal to \(\sigma^2\): a non-trivial, non-degenerate limit (CLT).</li></ol>
+Statistical meaning: the precision of an estimate improves only as \(\sqrt n\) (4× the data → half the error), and a \(95\%\) confidence interval is \(\overline X_n\pm1.96\,\sigma/\sqrt n\).</div>
+<h3>1.6 Summary table</h3>
+<table><tr><th>Mode</th><th>Main idea</th><th>Important result</th></tr>
+<tr><td>In probability</td><td>Small error with high probability</td><td>Weak LLN</td></tr>
+<tr><td>Almost sure</td><td>Convergence with probability 1</td><td>Strong LLN</td></tr>
+<tr><td>Mean-square</td><td>Expected squared error goes to zero</td><td>Estimator consistency</td></tr>
+<tr><td>In distribution</td><td>Convergence of distributions</td><td>CLT</td></tr></table>
+<div class="tool"><h3>🎛 Convergence Explorer</h3>
+<div class="ctl"><label>Distribution<select id="cd"><option value="b">Bernoulli(0.3)</option><option value="u">Uniform(0,1)</option><option value="n">Normal(0,1)</option><option value="e">Exponential(1)</option></select></label>
+<label>n = <span id="cnv">500</span><input id="cn" type="range" min="10" max="5000" value="500"></label>
+<label>Replications for CLT<input id="cm" type="number" min="100" max="5000" value="2000"></label><button id="cgo">Simulate</button></div>
+<div class="res"><div>Sample mean<b id="r1">–</b></div><div>Expected value μ<b id="r2">–</b></div><div>Sample variance<b id="r3">–</b></div><div>Standard error s/√n<b id="r4">–</b></div></div>
+<p><b>LLN:</b> running sample mean vs. μ.</p><div class="cv"><canvas id="ch1"></canvas></div>
+<p><b>CLT:</b> histogram of standardized means vs. N(0,1) density. Note this is a different object: the <em>distribution</em> of \(\sqrt n(\overline X_n-\mu)/\sigma\) over many replications.</p><div class="cv"><canvas id="ch2"></canvas></div></div>
+</section>
+
+<section id="s2"><h2>Section 02 · Conditional Probability, Bayes' Theorem</h2>
+<h3>2.1 Conditional probability</h3>
+<p>Given a sample space \(\Omega\) and events \(A,B\): the <b>joint</b> probability is \(P(A\cap B)\), the <b>marginal</b> is \(P(A)\), and the <b>conditional</b> restricts attention to the world where \(B\) occurred:</p>
+\[P(A|B)=\frac{P(A\cap B)}{P(B)},\quad P(B)>0\]
+<p>Events are <b>independent</b> if \(P(A\cap B)=P(A)P(B)\), i.e. \(P(A|B)=P(A)\): learning \(B\) tells nothing about \(A\).</p>
+<svg viewBox="0 0 400 140" style="max-width:420px;display:block;margin:auto"><rect x="2" y="2" width="396" height="136" fill="#fff" stroke="#C7B2D0"/><circle cx="160" cy="70" r="55" fill="#9A7AA5" fill-opacity=".45"/><circle cx="235" cy="70" r="55" fill="#73547F" fill-opacity=".45"/><text x="105" y="74" font-size="14">A</text><text x="285" y="74" font-size="14">B</text><text x="180" y="74" font-size="12" fill="#39323D">A∩B</text></svg>
+<div class="box"><b>Example.</b> \(P(B)=0.65\) (student attended lectures), \(P(A\cap B)=0.30\) (attended <em>and</em> passed). Then \(P(A|B)=0.30/0.65\approx0.46\).</div>
+<h3>2.2 Bayes' theorem</h3>
+\[P(A|B)=\frac{P(B|A)P(A)}{P(B)},\qquad P(B)=P(B|A)P(A)+P(B|\neg A)P(\neg A)\]
+<table><tr><th>Component</th><th>Meaning</th></tr><tr><td>Prior \(P(A)\)</td><td>Initial belief about the event</td></tr><tr><td>Likelihood \(P(B|A)\)</td><td>Probability of the evidence given the event</td></tr><tr><td>Posterior \(P(A|B)\)</td><td>Updated probability after seeing the evidence</td></tr><tr><td>Evidence \(P(B)\)</td><td>Overall probability of the data</td></tr></table>
+<div class="flow"><span>PRIOR</span><i>+ data →</i><span>LIKELIHOOD</span><i>⇒</i><span>POSTERIOR</span></div>
+<p>The denominator \(P(B)\) is a <b>normalizing constant</b>: it makes the posteriors over all hypotheses sum (or integrate) to 1. Check: \(P(A|B)=\frac{0.85\cdot0.20}{0.25}=0.68\) with \(P(B\cap A)=0.17,\ P(B\cap\neg A)=0.08\).</p>
+<h3>2.3 Worked example · medical testing</h3>
+<p>Prevalence 1%, sensitivity 99%, specificity 95%. If a person tests positive, what is the probability of disease?</p>
+\[P(D|+)=\frac{Se\cdot Prev}{Se\cdot Prev+(1-Sp)(1-Prev)}=\frac{0.99\cdot0.01}{0.99\cdot0.01+0.05\cdot0.99}\approx16.7\%\]
+<p>Out of 1000 people: 10 are ill (≈10 true positives), 990 healthy (≈50 false positives). Most positives are false: a very accurate test does not guarantee a high posterior when the prior is small (the base-rate effect).</p>
+<div class="tool"><h3>🧮 Bayesian Test Calculator</h3>
+<div class="ctl"><label>Prevalence (%)<input id="pv" type="number" value="1" min="0" max="100" step="0.1"></label><label>Sensitivity (%)<input id="se" type="number" value="99" min="0" max="100" step="0.1"></label><label>Specificity (%)<input id="sp" type="number" value="95" min="0" max="100" step="0.1"></label></div>
+<div class="res"><div>P(+)<b id="b1"></b></div><div>Posterior P(D|+)<b id="b2"></b></div><div>False positive rate<b id="b3"></b></div><div>True positive rate<b id="b4"></b></div></div>
+<div class="bar" id="bb"></div><p id="bt"></p><p id="be" style="color:#b5586a"></p></div>
+<h3 id="s3" style="scroll-margin-top:60px">2.4 Bayesian statistical inference</h3>
+<p>In Bayesian inference an unknown parameter \(\theta\) is a random variable. Prior knowledge \(\pi(\theta)\) is combined with the data through the likelihood:</p>
+\[\pi(\theta|x)=\frac{L(\theta;x)\,\pi(\theta)}{\int L(\theta;x)\pi(\theta)d\theta}\ \propto\ L(\theta;x)\,\pi(\theta)\]
+<p>The posterior gives point estimates (mean, mode) and <b>credible intervals</b>: an interval with 95% posterior probability of containing \(\theta\), a direct probability statement, unlike a frequentist confidence interval.</p>
+<div class="box"><b>Coin example.</b> Prior \(p\sim Beta(2,2)\); data: 7 heads, 3 tails (Binomial likelihood). Conjugacy gives \(\alpha_{post}=\alpha+h,\ \beta_{post}=\beta+t\), so posterior \(Beta(9,5)\) with mean \(9/14\approx0.643\), between the prior mean 0.5 and the sample frequency 0.7.</div>
+<div class="tool"><h3>📈 Bayesian Updating Explorer</h3>
+<div class="ctl"><label>Prior α<input id="pa" type="number" value="2" min="0.1" step="0.5"></label><label>Prior β<input id="pb" type="number" value="2" min="0.1" step="0.5"></label><label>Heads<input id="ph" type="number" value="7" min="0" step="1"></label><label>Tails<input id="pt" type="number" value="3" min="0" step="1"></label></div>
+<div class="res"><div>Prior mean<b id="u1"></b></div><div>Posterior mean<b id="u2"></b></div><div>Posterior Beta(α,β)<b id="u3"></b></div><div>95% credible interval<b id="u4"></b></div></div>
+<div class="cv"><canvas id="ch3"></canvas></div></div>
+<h3>2.5 Applications, advantages and limitations</h3>
+<div class="grid"><div class="card"><h3>Applications</h3><ul><li>Medical diagnosis</li><li>Spam filtering &amp; cybersecurity (intrusion detection)</li><li>Machine learning</li><li>Reliability and risk assessment</li><li>Scientific inference</li></ul></div>
+<div class="card"><h3>Advantages</h3><ul><li>Incorporates prior information</li><li>Updates beliefs as data arrive</li><li>Full distribution for parameters</li><li>Useful with little data if the prior is justified</li></ul></div>
+<div class="card"><h3>Limitations</h3><ul><li>Prior choice can be subjective</li><li>Sensitive to prior with limited data</li><li>Computationally heavy in complex models</li><li>Wrong model ⇒ misleading conclusions</li></ul></div></div>
+<table><tr><th>Bayesian</th><th>Frequentist</th></tr><tr><td>Parameters are random variables</td><td>Parameters are fixed, unknown</td></tr><tr><td>Uses prior and likelihood</td><td>Uses likelihood and sampling distributions</td></tr><tr><td>Posterior probabilities, credible intervals</td><td>Confidence intervals and hypothesis tests</td></tr><tr><td>Updates beliefs with new data</td><td>Evaluates procedures over repeated sampling</td></tr></table>
+<p>Note that as \(n\) grows the likelihood dominates the prior, so Bayesian and frequentist conclusions typically agree (try 700 heads / 300 tails in the explorer with different priors).</p>
+<h3>2.6 Final summary</h3>
+<ul><li>Conditional probability shows how information changes event probabilities.</li><li>Bayes' theorem is the rule for updating them.</li><li>Prior, likelihood and posterior are the three components of Bayesian inference.</li><li>Prior choice and model assumptions can influence conclusions.</li></ul>
+</section>
+<button id="btnTop" type="button">↑ Back to top</button>
+</main><footer>Homework 7 · Statistics · Sapienza</footer>
+<script>
+const C={dm:'#73547F',m:'#9A7AA5',l:'#C7B2D0'};const $=i=>document.getElementById(i);
+const pct=x=>(100*x).toFixed(2)+'%';
+// ---- math (independent of rendering) ----
+function lgamma(z){const g=[676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+ if(z<.5)return Math.log(Math.PI/Math.sin(Math.PI*z))-lgamma(1-z);z-=1;let x=.99999999999980993;for(let i=0;i<8;i++)x+=g[i]/(z+i+1);const t=z+7.5;return .5*Math.log(2*Math.PI)+(z+.5)*Math.log(t)-t+Math.log(x)}
+function betaPDF(x,a,b){if(x<=0||x>=1)return 0;return Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+(a-1)*Math.log(x)+(b-1)*Math.log(1-x))}
+function updateBetaPosterior(a,b,h,t){return{a:a+h,b:b+t}}
+function calculateBayesPosterior(prev,se,sp){const pPos=se*prev+(1-sp)*(1-prev);return{pPos,post:pPos>0?se*prev/pPos:NaN}}
+function calculateConditionalProbability(pAB,pB){return pAB/pB}
+const D={b:{mu:.3,v:.21,s:()=>Math.random()<.3?1:0},u:{mu:.5,v:1/12,s:Math.random},n:{mu:0,v:1,s:()=>Math.sqrt(-2*Math.log(1-Math.random()))*Math.cos(2*Math.PI*Math.random())},e:{mu:1,v:1,s:()=>-Math.log(1-Math.random())}};
+function simulateSampleMeans(d,n){const x=[];let s=0;const run=[];for(let i=1;i<=n;i++){const v=D[d].s();x.push(v);s+=v;run.push(s/i)}return{x,run}}
+function calculateSampleVariance(x){const m=x.reduce((a,b)=>a+b,0)/x.length;return x.reduce((a,b)=>a+(b-m)**2,0)/(x.length-1)}
+// ---- charts ----
+const opt=(xt,yt)=>({responsive:true,maintainAspectRatio:false,animation:false,scales:{x:{title:{display:true,text:xt}},y:{title:{display:true,text:yt}}},plugins:{legend:{display:true}}});
+const ch1=new Chart($('ch1'),{type:'line',data:{labels:[],datasets:[{label:'Running sample mean',data:[],borderColor:C.dm,pointRadius:0,borderWidth:1.5},{label:'Expected value μ',data:[],borderColor:'#b5586a',pointRadius:0,borderDash:[6,4]}]},options:opt('n (observations)','mean')});
+const ch2=new Chart($('ch2'),{data:{labels:[],datasets:[{type:'bar',label:'Standardized sample means',data:[],backgroundColor:C.l,borderColor:C.m,borderWidth:1},{type:'line',label:'N(0,1) density',data:[],borderColor:C.dm,pointRadius:0}]},options:opt('z','density')});
+const ch3=new Chart($('ch3'),{type:'line',data:{labels:[],datasets:[{label:'Prior',data:[],borderColor:C.l,backgroundColor:'#C7B2D044',fill:true,pointRadius:0},{label:'Likelihood (normalized)',data:[],borderColor:'#b5586a',borderDash:[5,4],pointRadius:0},{label:'Posterior',data:[],borderColor:C.dm,backgroundColor:'#73547F33',fill:true,pointRadius:0}]},options:opt('p','density')});
+// ---- Convergence Explorer ----
+function runExplorer(){const d=$('cd').value,n=+$('cn').value,M=Math.min(5000,Math.max(100,+$('cm').value||2000));$('cnv').textContent=n;
+ const {x,run}=simulateSampleMeans(d,n),{mu,v}=D[d],sd=Math.sqrt(v),s2=calculateSampleVariance(x);
+ $('r1').textContent=run[n-1].toFixed(4);$('r2').textContent=mu;$('r3').textContent=s2.toFixed(4);$('r4').textContent=Math.sqrt(s2/n).toFixed(4);
+ const st=Math.max(1,Math.floor(n/300)),L=[],A=[];for(let i=0;i<n;i+=st){L.push(i+1);A.push(run[i])}
+ ch1.data.labels=L;ch1.data.datasets[0].data=A;ch1.data.datasets[1].data=L.map(()=>mu);ch1.update();
+ const z=[];for(let r=0;r<M;r++){let s=0;for(let i=0;i<n;i++)s+=D[d].s();z.push(Math.sqrt(n)*(s/n-mu)/sd)}
+ const lo=-4,hi=4,K=32,w=(hi-lo)/K,cnt=Array(K).fill(0);z.forEach(q=>{const k=Math.floor((q-lo)/w);if(k>=0&&k<K)cnt[k]++});
+ ch2.data.labels=cnt.map((_,k)=>(lo+(k+.5)*w).toFixed(2));ch2.data.datasets[0].data=cnt.map(c=>c/(M*w));
+ ch2.data.datasets[1].data=cnt.map((_,k)=>{const q=lo+(k+.5)*w;return Math.exp(-q*q/2)/Math.sqrt(2*Math.PI)});ch2.update()}
+$('cgo').onclick=runExplorer;$('cn').oninput=()=>$('cnv').textContent=$('cn').value;$('cn').onchange=runExplorer;$('cd').onchange=runExplorer;
+// ---- Bayes calculator ----
+function renderBayes(){const g=i=>parseFloat($(i).value);const v=[g('pv'),g('se'),g('sp')];
+ if(v.some(x=>isNaN(x)||x<0||x>100)){$('be').textContent='Please enter percentages between 0 and 100.';return}
+ $('be').textContent='';const [pv,se,sp]=v.map(x=>x/100),r=calculateBayesPosterior(pv,se,sp);
+ if(!(r.pPos>0)){$('be').textContent='P(+) = 0: the posterior is undefined for these values.';return}
+ $('b1').textContent=pct(r.pPos);$('b2').textContent=pct(r.post)+' ('+r.post.toFixed(4)+')';$('b3').textContent=pct(1-sp);$('b4').textContent=pct(se);
+ const N=1000,TP=N*pv*se,FN=N*pv*(1-se),FP=N*(1-pv)*(1-sp),TN=N*(1-pv)*sp;
+ $('bb').innerHTML=[[TP,'#73547F','TP'],[FP,'#b5586a','FP'],[FN,'#9A7AA5','FN'],[TN,'#C7B2D0','TN']].map(a=>`<div style="width:${a[0]/N*100}%;background:${a[1]}" title="${a[2]}">${a[0]>=25?a[2]:''}</div>`).join('');
+ $('bt').textContent=`Out of 1,000 people: ${TP.toFixed(1)} true positives, ${FP.toFixed(1)} false positives, ${FN.toFixed(1)} false negatives, ${TN.toFixed(1)} true negatives. Of the ${(TP+FP).toFixed(1)} positives, ${(100*r.post).toFixed(1)}% are truly ill.`}
+['pv','se','sp'].forEach(i=>$(i).oninput=renderBayes);
+// ---- Beta updating ----
+function renderBeta(){const g=i=>parseFloat($(i).value),a=g('pa'),b=g('pb'),h=g('ph'),t=g('pt');if([a,b,h,t].some(x=>isNaN(x)||x<0)||a<=0||b<=0)return;
+ const p=updateBetaPosterior(a,b,h,t),K=200,xs=[],pr=[],po=[],li=[];
+ for(let i=1;i<K;i++){const x=i/K;xs.push(x.toFixed(3));pr.push(betaPDF(x,a,b));po.push(betaPDF(x,p.a,p.b));li.push(betaPDF(x,h+1,t+1))}
+ ch3.data.labels=xs;ch3.data.datasets[0].data=pr;ch3.data.datasets[1].data=li;ch3.data.datasets[2].data=po;ch3.update();
+ let c=0,lo=null,hi=null;po.forEach((y,i)=>{c+=y/K;if(lo===null&&c>=.025)lo=xs[i];if(hi===null&&c>=.975)hi=xs[i]});
+ $('u1').textContent=(a/(a+b)).toFixed(3);$('u2').textContent=(p.a/(p.a+p.b)).toFixed(3);$('u3').textContent=`Beta(${p.a}, ${p.b})`;$('u4').textContent=`[${lo}, ${hi}]`}
+['pa','pb','ph','pt'].forEach(i=>$(i).oninput=renderBeta);
+$('btnTop').addEventListener('click',()=>{window.scrollTo({top:0,behavior:'smooth'});document.documentElement.scrollTop=0;document.body.scrollTop=0});
+runExplorer();renderBayes();renderBeta();
+</script></body></html>
